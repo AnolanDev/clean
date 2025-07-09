@@ -94,7 +94,11 @@
             "Webkul\\SocialShare\\": "packages/Webkul/SocialShare/src",
             "Webkul\\Tax\\": "packages/Webkul/Tax/src",
             "Webkul\\Theme\\": "packages/Webkul/Theme/src",
-            "Webkul\\User\\": "packages/Webkul/User/src"
+            "Webkul\\User\\": "packages/Webkul/User/src",
+            "Clean\\Core\\": "packages/Clean/Core/src",
+            "Clean\\Catalog\\": "packages/Clean/Catalog/src",
+            "Clean\\Theme\\": "packages/Clean/Theme/src",
+            "Clean\\Admin\\": "packages/Clean/Admin/src"
         }
     },
     "autoload-dev": {

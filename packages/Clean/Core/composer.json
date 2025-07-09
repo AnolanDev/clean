@@ -1,0 +1,22 @@
+{
+    "name": "clean/core",
+    "description": "Clean Core Package - Base functionality for Clean ecommerce platform",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "bagisto/bagisto": "^2.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Clean\\Core\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Clean\\Core\\Providers\\CleanCoreServiceProvider"
+            ]
+        }
+    }
+}

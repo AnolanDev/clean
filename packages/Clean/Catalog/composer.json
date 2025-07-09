@@ -1,0 +1,23 @@
+{
+    "name": "clean/catalog",
+    "description": "Clean Catalog Package - Public catalog for cleaning products",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "bagisto/bagisto": "^2.2",
+        "clean/core": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Clean\\Catalog\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Clean\\Catalog\\Providers\\CleanCatalogServiceProvider"
+            ]
+        }
+    }
+}

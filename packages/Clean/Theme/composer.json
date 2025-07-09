@@ -1,0 +1,23 @@
+{
+    "name": "clean/theme",
+    "description": "Clean Theme Package - Visual customization for cleaning products platform",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "bagisto/bagisto": "^2.2",
+        "clean/core": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Clean\\Theme\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Clean\\Theme\\Providers\\CleanThemeServiceProvider"
+            ]
+        }
+    }
+}

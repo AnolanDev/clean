@@ -43,4 +43,12 @@ return [
     Webkul\Tax\Providers\TaxServiceProvider::class,
     Webkul\Theme\Providers\ThemeServiceProvider::class,
     Webkul\User\Providers\UserServiceProvider::class,
+    
+    /**
+     * Clean package service providers.
+     */
+    Clean\Core\Providers\CleanCoreServiceProvider::class,
+    Clean\Catalog\Providers\CleanCatalogServiceProvider::class,
+    Clean\Admin\Providers\CleanAdminServiceProvider::class,
+    Clean\Theme\Providers\CleanThemeServiceProvider::class,
 ];

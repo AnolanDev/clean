@@ -1,0 +1,23 @@
+{
+    "name": "clean/admin",
+    "description": "Clean Admin Package - Administrative interface for cleaning products",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "bagisto/bagisto": "^2.2",
+        "clean/core": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Clean\\Admin\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Clean\\Admin\\Providers\\CleanAdminServiceProvider"
+            ]
+        }
+    }
+}
