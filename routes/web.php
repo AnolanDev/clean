@@ -19,5 +19,5 @@ Route::get('/clean/info', function () {
 
 // Página principal del sistema Clean
 Route::get('/', function () {
-    return view('clean-home');
+    return view('clean-theme::clean-home');
 })->name('clean.home');

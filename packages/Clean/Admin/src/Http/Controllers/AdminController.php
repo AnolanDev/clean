@@ -17,10 +17,34 @@ class AdminController extends Controller
      */
     public function dashboard()
     {
-        $statistics = $this->adminService->getDashboardStatistics();
-        $recentProducts = $this->adminService->getRecentProducts();
-        $topBrands = $this->adminService->getTopBrands();
-        $safetyAlerts = $this->adminService->getSafetyAlerts();
+        // Datos de prueba para verificar que funciona
+        $statistics = [
+            'total_products' => 0,
+            'eco_friendly_products' => 0,
+            'hazardous_products' => 0,
+            'safe_products' => 0,
+            'total_brands' => 0,
+            'total_categories' => 0,
+            'total_ingredients' => 0,
+            'hazardous_ingredients' => 0,
+            'eco_percentage' => 0,
+            'safety_percentage' => 0,
+        ];
+        
+        $recentProducts = collect();
+        $topBrands = collect();
+        $safetyAlerts = [];
+
+        try {
+            // Intentar obtener datos reales del servicio
+            $statistics = $this->adminService->getDashboardStatistics();
+            $recentProducts = $this->adminService->getRecentProducts();
+            $topBrands = $this->adminService->getTopBrands();
+            $safetyAlerts = $this->adminService->getSafetyAlerts();
+        } catch (\Exception $e) {
+            // Si hay error, usar datos de prueba
+            logger()->error('Error en AdminService: ' . $e->getMessage());
+        }
 
         return view('clean-admin::dashboard', compact(
             'statistics', 'recentProducts', 'topBrands', 'safetyAlerts'

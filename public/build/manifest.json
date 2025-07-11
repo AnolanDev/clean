@@ -1,14 +1,7 @@
 {
-  "resources/css/app.css": {
-    "file": "assets/app-l0sNRNKZ.js",
-    "name": "app",
-    "src": "resources/css/app.css",
-    "isEntry": true
-  },
-  "resources/js/app.js": {
-    "file": "assets/app-DNxiirP_.js",
-    "name": "app",
-    "src": "resources/js/app.js",
+  "packages/Clean/Theme/resources/assets/css/app.css": {
+    "file": "assets/app-BGIcmy_q.css",
+    "src": "packages/Clean/Theme/resources/assets/css/app.css",
     "isEntry": true
   }
 }

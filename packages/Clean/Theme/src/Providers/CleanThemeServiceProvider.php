@@ -13,7 +13,7 @@ class CleanThemeServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->loadViewsFrom(__DIR__ . '/../Resources/views', 'clean-theme');
+        $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'clean-theme');
         
         $this->loadRoutesFrom(__DIR__ . '/../Routes/web.php');
         

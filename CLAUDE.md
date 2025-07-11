@@ -16,6 +16,9 @@ This is a **Bagisto** ecommerce application - a Laravel-based open-source ecomme
 ### Testing
 - `./vendor/bin/phpunit` - Run PHPUnit tests
 - `./vendor/bin/pest` - Run Pest tests (alternative test runner)
+- `./vendor/bin/phpunit --testsuite="Admin Feature Test"` - Run specific test suite
+- `./vendor/bin/phpunit --testsuite="Core Unit Test"` - Run Core unit tests
+- `./vendor/bin/phpunit --testsuite="Shop Feature Test"` - Run Shop feature tests
 
 ### Code Quality
 - `./vendor/bin/pint` - Run Laravel Pint code formatter (configured in `pint.json`)
@@ -63,10 +66,10 @@ Bagisto uses a modular architecture with packages located in `packages/Webkul/`.
 
 ### Custom Clean Package
 This project includes a custom `Clean` package in `packages/Clean/` with:
-- `Core/` - Core Clean functionality with models, repositories, and services
-- `Admin/` - Admin interface extensions
+- `Core/` - Core Clean functionality with models, repositories, services, and migrations for brands, categories, ingredients, and products
+- `Admin/` - Admin interface extensions with analytics, brands, categories, ingredients, products, and safety views
 - `Catalog/` - Catalog management features
-- `Theme/` - Theme customizations
+- `Theme/` - Theme customizations with TailwindCSS configuration
 
 ### Key Technologies
 - **Backend**: Laravel 11, PHP 8.2+
@@ -86,8 +89,10 @@ This project includes a custom `Clean` package in `packages/Clean/` with:
 
 ### Frontend Assets
 - Main app assets in `resources/js/app.js` and `resources/css/app.css`
+- Custom Clean Theme assets in `packages/Clean/Theme/resources/assets/css/app.css`
 - Package-specific assets in individual package directories
-- Build process handled by Vite
+- Build process handled by Vite with custom configuration (`vite.config.mjs`)
+- TailwindCSS configuration for Clean theme in `tailwind.config.js`
 - Admin and Shop themes have separate asset builds
 
 ### Configuration
@@ -99,8 +104,9 @@ This project includes a custom `Clean` package in `packages/Clean/` with:
 ### Testing Structure
 - Feature tests in `packages/Webkul/*/tests/Feature/`
 - Unit tests in `packages/Webkul/*/tests/Unit/`
-- Pest and PHPUnit supported
-- Test configuration in `phpunit.xml`
+- Pest and PHPUnit supported with configuration in `tests/Pest.php`
+- Test configuration in `phpunit.xml` with package-specific test suites
+- Memory limit set to 1024M for tests
 
 ## Development Workflow
 
@@ -118,7 +124,9 @@ Each package follows Laravel conventions:
 2. Follow the existing package structure
 3. Register routes, views, and services in the package's service provider
 4. Run migrations and seeders as needed
-5. Build frontend assets if modified
+5. Build frontend assets if modified (`npm run build` or `npm run dev`)
+6. Run code quality checks with `./vendor/bin/pint`
+7. Test changes with appropriate test suite
 
 ### Debugging
 - Laravel Debugbar enabled in development
@@ -129,10 +137,30 @@ Each package follows Laravel conventions:
 ## Important Notes
 
 - This is a multi-tenant capable ecommerce platform
-- Supports multiple languages and currencies
+- Supports multiple languages and currencies (19 languages included)
 - Uses Laravel Sail for Docker development
 - Elasticsearch integration for advanced search
 - Queue jobs for background processing
 - Extensive use of Laravel events and listeners
 - Repository pattern implementation
 - Modular package-based architecture allows easy extension
+- Custom Clean package extends Bagisto for specialized functionality
+- TailwindCSS for styling with custom configuration
+
+## Clean Package Specifics
+
+### Custom Models
+- `CleanBrand` - Product brand management
+- `CleanCategory` - Product categorization
+- `CleanIngredient` - Ingredient tracking and management
+- `CleanProduct` - Product information with ingredient relationships
+- `CleanSetting` - Application settings
+
+### Database Structure
+- Clean-specific migrations in `packages/Clean/Core/src/Database/Migrations/`
+- Seeders for initial data setup
+- Many-to-many relationship between products and ingredients
+
+### Admin Interface
+- Custom admin views for analytics, brands, categories, ingredients, products, and safety
+- Located in `packages/Clean/Admin/src/Resources/views/`

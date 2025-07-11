@@ -6,8 +6,69 @@
         "build": "vite build"
     },
     "devDependencies": {
+        "autoprefixer": "^10.4.21",
         "axios": "^1.7.9",
         "laravel-vite-plugin": "^1.0",
+        "postcss": "^8.5.6",
+        "tailwindcss": "^3.4.0",
         "vite": "^5.4.12"
-    }
+    },
+    "name": "clean",
+    "version": "1.0.0",
+    "description": "<p align=\"center\">   <a href=\"http://www.bagisto.com\">     <picture>       <source media=\"(prefers-color-scheme: dark)\" srcset=\"https://raw.githubusercontent.com/bagisto/temp-media/0b0984778fae92633f57e625c5494ead1fe320c3/dark-logo-P5H7MBtx.svg\">       <source media=\"(prefers-color-scheme: light)\" srcset=\"https://bagisto.com/wp-content/themes/bagisto/images/logo.png\">       <img src=\"https://bagisto.com/wp-content/themes/bagisto/images/logo.png\" alt=\"Bagisto logo\">     </picture>   </a> </p>",
+    "main": "index.js",
+    "directories": {
+        "test": "tests"
+    },
+    "dependencies": {
+        "asynckit": "^0.4.0",
+        "browserslist": "^4.25.1",
+        "call-bind-apply-helpers": "^1.0.2",
+        "caniuse-lite": "^1.0.30001727",
+        "combined-stream": "^1.0.8",
+        "delayed-stream": "^1.0.0",
+        "dunder-proto": "^1.0.1",
+        "electron-to-chromium": "^1.5.182",
+        "es-define-property": "^1.0.1",
+        "es-errors": "^1.3.0",
+        "es-object-atoms": "^1.1.1",
+        "es-set-tostringtag": "^2.1.0",
+        "esbuild": "^0.21.5",
+        "escalade": "^3.2.0",
+        "follow-redirects": "^1.15.9",
+        "form-data": "^4.0.3",
+        "fraction.js": "^4.3.7",
+        "function-bind": "^1.1.2",
+        "get-intrinsic": "^1.3.0",
+        "get-proto": "^1.0.1",
+        "gopd": "^1.2.0",
+        "has-symbols": "^1.1.0",
+        "has-tostringtag": "^1.0.2",
+        "hasown": "^2.0.2",
+        "math-intrinsics": "^1.1.0",
+        "mime-db": "^1.52.0",
+        "mime-types": "^2.1.35",
+        "nanoid": "^3.3.11",
+        "node-releases": "^2.0.19",
+        "normalize-range": "^0.1.2",
+        "picocolors": "^1.1.1",
+        "picomatch": "^2.3.1",
+        "postcss-value-parser": "^4.2.0",
+        "proxy-from-env": "^1.1.0",
+        "rollup": "^4.44.2",
+        "source-map-js": "^1.2.1",
+        "update-browserslist-db": "^1.1.3",
+        "vite-plugin-full-reload": "^1.2.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/AnolanDev/clean.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/AnolanDev/clean/issues"
+    },
+    "homepage": "https://github.com/AnolanDev/clean#readme"
 }

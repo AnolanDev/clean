@@ -4,6 +4,10 @@ use Illuminate\Support\Facades\Route;
 use Clean\Admin\Http\Controllers\AdminController;
 
 Route::group(['middleware' => ['web']], function () {
+    
+    // Ruta principal /admin redirige al dashboard de Clean
+    Route::get('/admin', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    
     Route::prefix('admin/clean')->name('admin.clean.')->group(function () {
         
         // Dashboard
