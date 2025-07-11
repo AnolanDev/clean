@@ -13,6 +13,7 @@ class CleanDatabaseSeeder extends Seeder
             CleanCategorySeeder::class,
             CleanIngredientSeeder::class,
             CleanSettingSeeder::class,
+            CatalogDataSeeder::class,
         ]);
     }
 }

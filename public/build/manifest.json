@@ -1,6 +1,11 @@
 {
+  "packages/Clean/Admin/resources/assets/css/admin.css": {
+    "file": "assets/admin-CXcNz8mg.css",
+    "src": "packages/Clean/Admin/resources/assets/css/admin.css",
+    "isEntry": true
+  },
   "packages/Clean/Theme/resources/assets/css/app.css": {
-    "file": "assets/app-BGIcmy_q.css",
+    "file": "assets/app-DtjGZyWF.css",
     "src": "packages/Clean/Theme/resources/assets/css/app.css",
     "isEntry": true
   }

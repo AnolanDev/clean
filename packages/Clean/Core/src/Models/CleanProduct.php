@@ -14,6 +14,21 @@ class CleanProduct extends Model implements CleanProductContract
         'product_id',
         'clean_brand_id',
         'clean_category_id',
+        // Nuevos campos del catálogo
+        'name',
+        'description',
+        'benefits',
+        'presentations',
+        'available_fragrances',
+        'usage_types',
+        'catalog_source',
+        'is_concentrated_formula',
+        'concentration_percentage',
+        'food_contact_safe',
+        'no_residue',
+        'fabric_safe',
+        'yield_information',
+        // Campos existentes
         'product_type',
         'ph_level',
         'ph_value',
@@ -46,6 +61,15 @@ class CleanProduct extends Model implements CleanProductContract
     ];
 
     protected $casts = [
+        // Nuevos campos
+        'presentations' => 'array',
+        'available_fragrances' => 'array',
+        'usage_types' => 'array',
+        'is_concentrated_formula' => 'boolean',
+        'food_contact_safe' => 'boolean',
+        'no_residue' => 'boolean',
+        'fabric_safe' => 'boolean',
+        // Campos existentes
         'ph_value' => 'decimal:1',
         'coverage_area' => 'integer',
         'is_concentrated' => 'boolean',

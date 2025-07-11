@@ -40,6 +40,7 @@ class CleanCoreServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerRepositories();
         $this->registerServices();
+        $this->registerCommands();
     }
 
     /**
@@ -117,6 +118,20 @@ class CleanCoreServiceProvider extends ServiceProvider
                 );
             }
         );
+    }
+
+    /**
+     * Register package commands.
+     *
+     * @return void
+     */
+    protected function registerCommands()
+    {
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                \Clean\Core\Console\Commands\ImportCatalogCommand::class,
+            ]);
+        }
     }
 
     /**
