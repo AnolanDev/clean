@@ -1,490 +1,549 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Marcas - Clean Admin</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f8fafc;
-            color: #2d3748;
-        }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
-        header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 1.5rem 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-        }
-        
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            transition: background-color 0.2s;
-        }
-        
-        .nav-links a:hover {
-            background-color: rgba(255,255,255,0.1);
-        }
-        
-        .page-header {
-            background: white;
-            padding: 2rem 0;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        
-        .page-title {
-            font-size: 2rem;
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 0.5rem;
-        }
-        
-        .filters {
-            background: white;
-            padding: 1.5rem;
-            margin: 2rem 0;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .filters h3 {
-            margin-bottom: 1rem;
-            color: #4a5568;
-        }
-        
-        .filter-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1rem;
-        }
-        
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .filter-group label {
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: #4a5568;
-        }
-        
-        .filter-group select,
-        .filter-group input {
-            padding: 0.5rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 5px;
-            font-size: 0.9rem;
-        }
-        
-        .btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-            transition: all 0.2s;
-        }
-        
-        .btn-primary {
-            background: #667eea;
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: #5a6fd8;
-        }
-        
-        .btn-secondary {
-            background: #e2e8f0;
-            color: #4a5568;
-        }
-        
-        .btn-secondary:hover {
-            background: #cbd5e0;
-        }
-        
-        .btn-danger {
-            background: #f56565;
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            background: #e53e3e;
-        }
-        
-        .brands-table {
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin: 2rem 0;
-        }
-        
-        .table-header {
-            background: #f7fafc;
-            padding: 1rem;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .table-actions {
-            display: flex;
-            gap: 1rem;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        th, td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        
-        th {
-            background: #f7fafc;
-            font-weight: 600;
-            color: #4a5568;
-        }
-        
-        .brand-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .brand-icon {
-            font-size: 2.5rem;
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(45deg, #f7fafc, #edf2f7);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid #e2e8f0;
-        }
-        
-        .brand-details h4 {
-            margin-bottom: 0.25rem;
-            color: #2d3748;
-            font-size: 1.1rem;
-        }
-        
-        .brand-details p {
-            color: #718096;
-            font-size: 0.9rem;
-        }
-        
-        .badge {
-            padding: 0.25rem 0.5rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            margin-right: 0.5rem;
-        }
-        
-        .badge.eco {
-            background: #f0fff4;
-            color: #22543d;
-        }
-        
-        .badge.premium {
-            background: #faf5ff;
-            color: #553c9a;
-        }
-        
-        .badge.popular {
-            background: #fff5f5;
-            color: #742a2a;
-        }
-        
-        .actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-        
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 1rem;
-            margin: 2rem 0;
-        }
-        
-        .pagination a {
-            padding: 0.5rem 1rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 5px;
-            text-decoration: none;
-            color: #4a5568;
-            transition: all 0.2s;
-        }
-        
-        .pagination a:hover {
-            background: #f7fafc;
-        }
-        
-        .pagination .active {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-        
-        .no-brands {
-            text-align: center;
-            padding: 3rem;
-            color: #a0aec0;
-        }
-        
-        .no-brands h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-        
-        .stat-card {
-            background: #f8fafc;
-            padding: 1rem;
-            border-radius: 8px;
-            text-align: center;
-        }
-        
-        .stat-card h4 {
-            font-size: 1.5rem;
-            color: #667eea;
-            margin-bottom: 0.5rem;
-        }
-        
-        .stat-card p {
-            color: #4a5568;
-            font-size: 0.9rem;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">🧽 Clean Admin</div>
-                <nav class="nav-links">
-                    <a href="{{ route('admin.clean.dashboard') }}">Dashboard</a>
-                    <a href="{{ route('admin.clean.products') }}">Productos</a>
-                    <a href="{{ route('admin.clean.brands') }}">Marcas</a>
-                    <a href="{{ route('admin.clean.categories') }}">Categorías</a>
-                    <a href="{{ route('admin.clean.ingredients') }}">Ingredientes</a>
-                    <a href="{{ route('admin.clean.safety') }}">Seguridad</a>
-                    <a href="{{ route('admin.clean.analytics') }}">Análisis</a>
-                    <a href="{{ route('admin.clean.settings') }}">Configuración</a>
-                </nav>
+@extends('clean-admin::layouts.admin')
+
+@section('title', 'Gestión de Marcas Clean')
+
+@section('content')
+<div class="min-h-screen bg-gray-50">
+    <!-- Header Compacto -->
+    <div class="bg-white border-b border-gray-200 px-6 py-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Gestión de Marcas</h1>
+                    <p class="text-sm text-gray-500">{{ $totalBrands ?? $brands->count() }} marcas • {{ $countriesCount ?? $countries->count() }} países</p>
+                </div>
+            </div>
+            <div class="text-right">
+                <span class="text-xs text-gray-500">Administración de Marcas Clean</span>
             </div>
         </div>
-    </header>
+    </div>
 
-    <div class="container">
-        <div class="page-header">
-            <h1 class="page-title">🏷️ Gestión de Marcas</h1>
-            <p>Administra todas las marcas de productos de limpieza</p>
+    <!-- Panel de Control Integrado -->
+    <div class="px-4 py-4">
+        <!-- Estadísticas Compactas -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+            <div class="bg-white rounded-lg p-4 border border-gray-200">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-gray-900">{{ $totalBrands ?? $brands->count() }}</p>
+                        <p class="text-xs text-gray-500">Total Marcas</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg p-4 border border-gray-200">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-gray-900">{{ $activeBrands ?? $brands->where('status', true)->count() }}</p>
+                        <p class="text-xs text-gray-500">Activas</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg p-4 border border-gray-200">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center mr-3">
+                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-gray-900">{{ $ecoFriendlyBrands ?? $brands->where('is_eco_friendly', true)->count() }}</p>
+                        <p class="text-xs text-gray-500">Ecológicas</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg p-4 border border-gray-200">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                        <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-gray-900">{{ $countriesCount ?? $countries->count() }}</p>
+                        <p class="text-xs text-gray-500">Países</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="filters">
-            <h3>🔍 Filtros</h3>
-            <form method="GET" action="{{ route('admin.clean.brands') }}">
-                <div class="filter-grid">
-                    <div class="filter-group">
-                        <label>Búsqueda</label>
-                        <input type="text" name="search" placeholder="Buscar marcas..." value="{{ request('search') }}">
+        <!-- Panel de Acciones y Filtros -->
+        <div class="bg-white rounded-lg border border-gray-200 mb-4">
+            <!-- Acciones Principales -->
+            <div class="p-3 border-b border-gray-200">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div class="flex items-center space-x-2">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+                        </svg>
+                        <span class="text-sm font-medium text-gray-700">Acciones:</span>
                     </div>
                     
-                    <div class="filter-group">
-                        <label>Tipo</label>
-                        <select name="eco_friendly">
-                            <option value="">Todas las marcas</option>
-                            <option value="1" {{ request('eco_friendly') == '1' ? 'selected' : '' }}>Eco-friendly</option>
-                            <option value="0" {{ request('eco_friendly') == '0' ? 'selected' : '' }}>Convencionales</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div style="margin-top: 1rem;">
-                    <button type="submit" class="btn btn-primary">Aplicar Filtros</button>
-                    <a href="{{ route('admin.clean.brands') }}" class="btn btn-secondary">Limpiar</a>
-                </div>
-            </form>
-        </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <!-- CREAR MARCA - Botón Principal -->
+                        <a href="{{ route('admin.clean.brands.create') }}" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            <span class="hidden sm:inline">Nueva Marca</span>
+                            <span class="sm:hidden">Nueva</span>
+                        </a>
 
-        <div class="brands-table">
-            <div class="table-header">
-                <h3>Lista de Marcas</h3>
-                <div class="table-actions">
-                    <a href="#" class="btn btn-primary">➕ Nueva Marca</a>
-                    <a href="#" class="btn btn-secondary">📥 Exportar</a>
+                        <!-- EXPORTAR -->
+                        <button onclick="showExportModal()" class="bg-purple-500 hover:bg-purple-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <span class="hidden sm:inline">Exportar</span>
+                        </button>
+
+                        <!-- CARGA MASIVA -->
+                        <button onclick="showBulkModal()" class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            </svg>
+                            <span class="hidden sm:inline">Carga Masiva</span>
+                            <span class="sm:hidden">Masiva</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
+            <!-- Filtros y Búsqueda -->
+            <div class="p-3">
+                <form method="GET" action="{{ route('admin.clean.brands.index') }}" class="space-y-3">
+                    <!-- Búsqueda Principal -->
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <div class="flex-1">
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
+                                </div>
+                                <input type="text" name="search" value="{{ $filters['search'] ?? '' }}" 
+                                       placeholder="Buscar marcas..." 
+                                       class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                        </div>
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center justify-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                            <span class="hidden sm:inline">Buscar</span>
+                        </button>
+                    </div>
+
+                    <!-- Filtros Adicionales - Solo visible en modo expandido -->
+                    <div id="advanced-filters" class="hidden">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                            <!-- País -->
+                            <div>
+                                <select name="country" class="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <option value="">Todos los países</option>
+                                    @foreach($countries as $country)
+                                        <option value="{{ $country }}" {{ ($filters['country'] ?? '') === $country ? 'selected' : '' }}>{{ $country }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Ecológica -->
+                            <div>
+                                <select name="eco_friendly" class="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <option value="">Todas las marcas</option>
+                                    <option value="1" {{ isset($filters['eco_friendly']) && $filters['eco_friendly'] == '1' ? 'selected' : '' }}>Solo ecológicas</option>
+                                </select>
+                            </div>
+
+                            <!-- Estado -->
+                            <div>
+                                <select name="status" class="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <option value="">Todos los estados</option>
+                                    <option value="1" {{ isset($filters['status']) && $filters['status'] == '1' ? 'selected' : '' }}>Activas</option>
+                                    <option value="0" {{ isset($filters['status']) && $filters['status'] == '0' ? 'selected' : '' }}>Inactivas</option>
+                                </select>
+                            </div>
+
+                            <!-- Ordenamiento -->
+                            <div>
+                                <select name="sort_by" class="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <option value="sort_order" {{ ($filters['sort_by'] ?? 'sort_order') === 'sort_order' ? 'selected' : '' }}>Orden predeterminado</option>
+                                    <option value="name" {{ ($filters['sort_by'] ?? '') === 'name' ? 'selected' : '' }}>Nombre</option>
+                                    <option value="country" {{ ($filters['sort_by'] ?? '') === 'country' ? 'selected' : '' }}>País</option>
+                                    <option value="created_at" {{ ($filters['sort_by'] ?? '') === 'created_at' ? 'selected' : '' }}>Fecha de creación</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Toggle Filtros Avanzados -->
+                    <div class="flex items-center justify-between">
+                        <button type="button" onclick="toggleAdvancedFilters()" class="text-sm text-blue-600 hover:text-blue-700 flex items-center">
+                            <svg id="filter-icon" class="w-4 h-4 mr-1 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                            <span id="filter-text">Filtros avanzados</span>
+                        </button>
+
+                        @if(array_filter($filters ?? []))
+                            <a href="{{ route('admin.clean.brands.index') }}" class="text-sm text-gray-500 hover:text-gray-700">
+                                Limpiar filtros
+                            </a>
+                        @endif
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tabla de Marcas -->
+        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
             @if($brands->count() > 0)
-                <div class="stats-grid" style="padding: 1rem;">
-                    <div class="stat-card">
-                        <h4>{{ $brands->total() }}</h4>
-                        <p>Total Marcas</p>
-                    </div>
-                    <div class="stat-card">
-                        <h4>{{ $brands->where('is_eco_friendly', true)->count() }}</h4>
-                        <p>Eco-friendly</p>
-                    </div>
-                    <div class="stat-card">
-                        <h4>{{ $brands->where('is_active', true)->count() }}</h4>
-                        <p>Activas</p>
+                <!-- Controles de Selección -->
+                <div class="px-4 py-3 border-b border-gray-200 bg-gray-50">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <input type="checkbox" id="selectAll" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="selectAll" class="text-sm text-gray-700">Seleccionar todo</label>
+                            <span id="selectedCount" class="text-sm text-gray-500 hidden">0 seleccionados</span>
+                        </div>
+                        
+                        <!-- Acciones en lote -->
+                        <div id="bulkActions" class="hidden flex items-center space-x-2">
+                            <select id="bulkActionSelect" class="text-sm border border-gray-300 rounded px-2 py-1">
+                                <option value="">Acción en lote...</option>
+                                <option value="activate">Activar</option>
+                                <option value="deactivate">Desactivar</option>
+                                <option value="toggle_eco">Alternar ecológica</option>
+                                <option value="export">Exportar seleccionados</option>
+                                <option value="delete">Eliminar</option>
+                            </select>
+                            <button onclick="executeBulkAction()" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">
+                                Ejecutar
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <table>
-                    <thead>
-                        <tr>
-                            <th><input type="checkbox" id="select-all"></th>
-                            <th>Marca</th>
-                            <th>Descripción</th>
-                            <th>País</th>
-                            <th>Características</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($brands as $brand)
+                <!-- Tabla Responsiva -->
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
                             <tr>
-                                <td><input type="checkbox" class="brand-checkbox" value="{{ $brand->id }}"></td>
-                                <td>
-                                    <div class="brand-info">
-                                        <div class="brand-icon">
-                                            🏷️
-                                        </div>
-                                        <div class="brand-details">
-                                            <h4>{{ $brand->name }}</h4>
-                                            <p>ID: {{ $brand->id }}</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>{{ Str::limit($brand->description ?? 'Sin descripción', 50) }}</td>
-                                <td>{{ $brand->country ?? 'No especificado' }}</td>
-                                <td>
-                                    @if($brand->is_eco_friendly)
-                                        <span class="badge eco">🌿 Eco-friendly</span>
-                                    @endif
-                                    @if($brand->is_premium)
-                                        <span class="badge premium">⭐ Premium</span>
-                                    @endif
-                                    @if($brand->is_popular)
-                                        <span class="badge popular">🔥 Popular</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    @if($brand->is_active)
-                                        <span class="badge eco">✅ Activa</span>
-                                    @else
-                                        <span class="badge">❌ Inactiva</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="actions">
-                                        <a href="#" class="btn btn-primary">✏️ Editar</a>
-                                        <button class="btn btn-danger" onclick="deleteBrand({{ $brand->id }})">🗑️</button>
-                                    </div>
-                                </td>
+                                <th class="w-4 px-4 py-3">
+                                    <span class="sr-only">Seleccionar</span>
+                                </th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Marca</th>
+                                <th class="hidden md:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">País</th>
+                                <th class="hidden lg:table-cell px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Productos</th>
+                                <th class="hidden sm:table-cell px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach($brands as $brand)
+                                <tr class="hover:bg-gray-50 transition-colors duration-150">
+                                    <!-- Checkbox de Selección -->
+                                    <td class="px-4 py-4">
+                                        <input type="checkbox" class="brand-checkbox rounded border-gray-300 text-blue-600 focus:ring-blue-500" 
+                                               value="{{ $brand->id }}">
+                                    </td>
 
-                <div class="pagination">
-                    {{ $brands->links() }}
+                                    <!-- Información de la Marca -->
+                                    <td class="px-4 py-4">
+                                        <div class="flex items-center">
+                                            @if($brand->logo)
+                                                <img class="h-10 w-10 rounded-lg object-cover mr-3" src="{{ Storage::url($brand->logo) }}" alt="{{ $brand->name }}">
+                                            @else
+                                                <div class="h-10 w-10 rounded-lg bg-gray-200 flex items-center justify-center mr-3">
+                                                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"></path>
+                                                    </svg>
+                                                </div>
+                                            @endif
+                                            <div>
+                                                <div class="flex items-center">
+                                                    <span class="text-sm font-medium text-gray-900">{{ $brand->name }}</span>
+                                                    @if($brand->is_eco_friendly)
+                                                        <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                                            </svg>
+                                                            Eco
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                                <div class="text-xs text-gray-500">
+                                                    {{ Str::limit($brand->description, 50) }}
+                                                    @if($brand->website)
+                                                        <a href="{{ $brand->website }}" target="_blank" class="text-blue-500 hover:text-blue-700 ml-1">
+                                                            <svg class="w-3 h-3 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                                            </svg>
+                                                        </a>
+                                                    @endif
+                                                </div>
+                                                <!-- Info adicional en móviles -->
+                                                <div class="mt-1 text-xs text-gray-500 md:hidden">
+                                                    @if($brand->country)
+                                                        <span class="inline-flex items-center">
+                                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                            </svg>
+                                                            {{ $brand->country }}
+                                                        </span>
+                                                    @endif
+                                                    <span class="ml-2 lg:hidden">{{ $brand->products_count ?? 0 }} productos</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <!-- País -->
+                                    <td class="hidden md:table-cell px-4 py-4 text-sm text-gray-500">
+                                        @if($brand->country)
+                                            <div class="flex items-center">
+                                                <svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                </svg>
+                                                {{ $brand->country }}
+                                            </div>
+                                        @else
+                                            <span class="text-gray-400">No especificado</span>
+                                        @endif
+                                    </td>
+
+                                    <!-- Productos -->
+                                    <td class="hidden lg:table-cell px-4 py-4 text-sm text-gray-900 text-center">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            {{ $brand->products_count ?? 0 }}
+                                        </span>
+                                    </td>
+
+                                    <!-- Estado -->
+                                    <td class="hidden sm:table-cell px-4 py-4 text-center">
+                                        @if($brand->status)
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                                Activa
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>
+                                                Inactiva
+                                            </span>
+                                        @endif
+                                    </td>
+
+                                    <!-- Acciones -->
+                                    <td class="px-4 py-4 text-center">
+                                        <div class="flex items-center justify-center space-x-1">
+                                            <!-- Ver -->
+                                            <a href="{{ route('admin.clean.brands.show', $brand) }}" 
+                                               class="inline-flex items-center justify-center w-8 h-8 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-200" 
+                                               title="Ver marca">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                </svg>
+                                            </a>
+
+                                            <!-- Editar -->
+                                            <a href="{{ route('admin.clean.brands.edit', $brand) }}" 
+                                               class="inline-flex items-center justify-center w-8 h-8 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-colors duration-200" 
+                                               title="Editar marca">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                </svg>
+                                            </a>
+
+                                            <!-- Eliminar -->
+                                            <button onclick="confirmDelete('{{ $brand->id }}', '{{ $brand->name }}')" 
+                                                    class="inline-flex items-center justify-center w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors duration-200" 
+                                                    title="Eliminar marca">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
+
+                <!-- Paginación -->
+                @if($brands->hasPages())
+                    <div class="px-4 py-3 border-t border-gray-200 bg-gray-50">
+                        {{ $brands->links() }}
+                    </div>
+                @endif
             @else
-                <div class="no-brands">
-                    <h3>No se encontraron marcas</h3>
-                    <p>Intenta ajustar los filtros o crear nuevas marcas.</p>
+                <!-- Estado Vacío -->
+                <div class="px-6 py-12 text-center">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"></path>
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">No hay marcas</h3>
+                    <p class="mt-1 text-sm text-gray-500">Comienza creando tu primera marca.</p>
+                    <div class="mt-6">
+                        <a href="{{ route('admin.clean.brands.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-emerald-500 hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            Nueva Marca
+                        </a>
+                    </div>
                 </div>
             @endif
         </div>
     </div>
+</div>
 
-    <script>
-        // Select all checkbox functionality
-        document.getElementById('select-all').addEventListener('change', function() {
-            const checkboxes = document.querySelectorAll('.brand-checkbox');
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = this.checked;
-            });
+<!-- Formulario para eliminar (oculto) -->
+<form id="deleteForm" method="POST" style="display: none;">
+    @csrf
+    @method('DELETE')
+</form>
+
+@endsection
+
+@push('scripts')
+<script>
+// Toggle filtros avanzados
+function toggleAdvancedFilters() {
+    const filters = document.getElementById('advanced-filters');
+    const icon = document.getElementById('filter-icon');
+    const text = document.getElementById('filter-text');
+    
+    if (filters.classList.contains('hidden')) {
+        filters.classList.remove('hidden');
+        icon.style.transform = 'rotate(180deg)';
+        text.textContent = 'Ocultar filtros';
+    } else {
+        filters.classList.add('hidden');
+        icon.style.transform = 'rotate(0deg)';
+        text.textContent = 'Filtros avanzados';
+    }
+}
+
+// Gestión de selección múltiple
+document.addEventListener('DOMContentLoaded', function() {
+    const selectAll = document.getElementById('selectAll');
+    const checkboxes = document.querySelectorAll('.brand-checkbox');
+    const selectedCount = document.getElementById('selectedCount');
+    const bulkActions = document.getElementById('bulkActions');
+
+    selectAll?.addEventListener('change', function() {
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
         });
+        updateBulkActions();
+    });
 
-        // Delete single brand
-        function deleteBrand(brandId) {
-            if (confirm('¿Estás seguro de que quieres eliminar esta marca?')) {
-                // Here you would make an AJAX request to delete the brand
-                console.log('Deleting brand:', brandId);
-            }
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateBulkActions);
+    });
+
+    function updateBulkActions() {
+        const selected = document.querySelectorAll('.brand-checkbox:checked');
+        const count = selected.length;
+        
+        if (count > 0) {
+            selectedCount.textContent = `${count} seleccionados`;
+            selectedCount.classList.remove('hidden');
+            bulkActions.classList.remove('hidden');
+        } else {
+            selectedCount.classList.add('hidden');
+            bulkActions.classList.add('hidden');
         }
+        
+        selectAll.indeterminate = count > 0 && count < checkboxes.length;
+        selectAll.checked = count === checkboxes.length;
+    }
+});
 
-        // Bulk delete
-        function bulkDelete() {
-            const selected = document.querySelectorAll('.brand-checkbox:checked');
-            if (selected.length === 0) {
-                alert('Por favor selecciona al menos una marca para eliminar.');
-                return;
-            }
-
-            if (confirm(`¿Estás seguro de que quieres eliminar ${selected.length} marcas?`)) {
-                const ids = Array.from(selected).map(checkbox => checkbox.value);
-                console.log('Bulk deleting brands:', ids);
-                // Here you would make an AJAX request to delete multiple brands
-            }
+// Ejecutar acción en lote
+function executeBulkAction() {
+    const action = document.getElementById('bulkActionSelect').value;
+    const selected = Array.from(document.querySelectorAll('.brand-checkbox:checked')).map(cb => cb.value);
+    
+    if (!action || selected.length === 0) {
+        alert('Selecciona una acción y al menos una marca');
+        return;
+    }
+    
+    if (action === 'delete' && !confirm('¿Estás seguro de que quieres eliminar las marcas seleccionadas?')) {
+        return;
+    }
+    
+    // Enviar petición AJAX
+    fetch('{{ route("admin.clean.brands.bulk-action") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({
+            action: action,
+            brand_ids: selected
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error: ' + data.message);
         }
-    </script>
-</body>
-</html>
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al ejecutar la acción');
+    });
+}
+
+// Confirmar eliminación individual
+function confirmDelete(brandId, brandName) {
+    if (confirm(`¿Estás seguro de que quieres eliminar la marca "${brandName}"?`)) {
+        const form = document.getElementById('deleteForm');
+        form.action = `/admin/clean/brands/${brandId}`;
+        form.submit();
+    }
+}
+
+// Mostrar modal de exportación
+function showExportModal() {
+    // Implementar modal de exportación
+    window.open('{{ route("admin.clean.brands.export") }}?format=csv', '_blank');
+}
+
+// Mostrar modal de carga masiva
+function showBulkModal() {
+    // Implementar modal de carga masiva
+    alert('Funcionalidad de carga masiva en desarrollo');
+}
+</script>
+@endpush

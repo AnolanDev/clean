@@ -215,7 +215,7 @@
                 <div class="px-6 py-4 border-b border-gray-200">
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg font-medium text-gray-900">Marcas Populares</h3>
-                        <a href="{{ route('admin.clean.brands') }}" class="text-sm font-medium text-emerald-600 hover:text-emerald-500">
+                        <a href="{{ route('admin.clean.brands.index') }}" class="text-sm font-medium text-emerald-600 hover:text-emerald-500">
                             Ver todas
                         </a>
                     </div>

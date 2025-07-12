@@ -429,7 +429,7 @@
                 <nav class="nav-links">
                     <a href="{{ route('admin.clean.dashboard') }}">Dashboard</a>
                     <a href="{{ route('admin.clean.products') }}">Productos</a>
-                    <a href="{{ route('admin.clean.brands') }}">Marcas</a>
+                    <a href="{{ route('admin.clean.brands.index') }}">Marcas</a>
                     <a href="{{ route('admin.clean.categories') }}">Categorías</a>
                     <a href="{{ route('admin.clean.ingredients') }}">Ingredientes</a>
                     <a href="{{ route('admin.clean.safety') }}">Seguridad</a>
