@@ -31,7 +31,7 @@
 
                     <!-- Productos -->
                     <li>
-                        <a href="{{ route('admin.clean.products') }}" 
+                        <a href="{{ route('admin.clean.products.index') }}" 
                            class="{{ request()->routeIs('admin.clean.products*') ? 'bg-emerald-50 text-emerald-700' : 'text-gray-700 hover:text-emerald-700 hover:bg-emerald-50' }} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
                             <svg class="{{ request()->routeIs('admin.clean.products*') ? 'text-emerald-500' : 'text-gray-400 group-hover:text-emerald-500' }} h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.75 7.5h16.5-1.5a.75.75 0 00-.75-.75H5.25a.75.75 0 00-.75.75v0z" />

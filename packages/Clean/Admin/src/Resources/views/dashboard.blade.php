@@ -159,7 +159,7 @@
                 <div class="px-6 py-4 border-b border-gray-200">
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg font-medium text-gray-900">Productos Recientes</h3>
-                        <a href="{{ route('admin.clean.products') }}" class="text-sm font-medium text-emerald-600 hover:text-emerald-500">
+                        <a href="{{ route('admin.clean.products.index') }}" class="text-sm font-medium text-emerald-600 hover:text-emerald-500">
                             Ver todos
                         </a>
                     </div>
