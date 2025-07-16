@@ -30,7 +30,7 @@
                             </svg>
                             Productos
                             <span class="ml-auto w-9 min-w-max whitespace-nowrap rounded-full bg-white px-2.5 py-0.5 text-center text-xs font-medium text-emerald-600 ring-1 ring-inset ring-emerald-200">
-                                12
+                                {{ \Clean\Core\Models\CleanProduct::count() }}
                             </span>
                         </a>
                     </li>
@@ -45,7 +45,7 @@
                             </svg>
                             Marcas
                             <span class="ml-auto w-9 min-w-max whitespace-nowrap rounded-full bg-white px-2.5 py-0.5 text-center text-xs font-medium text-emerald-600 ring-1 ring-inset ring-emerald-200">
-                                19
+                                {{ \Clean\Core\Models\CleanBrand::count() }}
                             </span>
                         </a>
                     </li>
@@ -59,7 +59,7 @@
                             </svg>
                             Categorías
                             <span class="ml-auto w-9 min-w-max whitespace-nowrap rounded-full bg-white px-2.5 py-0.5 text-center text-xs font-medium text-emerald-600 ring-1 ring-inset ring-emerald-200">
-                                42
+                                {{ \Clean\Core\Models\CleanCategory::count() }}
                             </span>
                         </a>
                     </li>
@@ -73,7 +73,7 @@
                             </svg>
                             Ingredientes
                             <span class="ml-auto w-9 min-w-max whitespace-nowrap rounded-full bg-white px-2.5 py-0.5 text-center text-xs font-medium text-emerald-600 ring-1 ring-inset ring-emerald-200">
-                                16
+                                {{ \Clean\Core\Models\CleanIngredient::count() }}
                             </span>
                         </a>
                     </li>
