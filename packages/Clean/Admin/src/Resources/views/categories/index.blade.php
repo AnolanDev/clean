@@ -1,537 +1,536 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Categorías - Clean Admin</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f8fafc;
-            color: #2d3748;
-        }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
-        header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 1.5rem 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-        }
-        
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            transition: background-color 0.2s;
-        }
-        
-        .nav-links a:hover {
-            background-color: rgba(255,255,255,0.1);
-        }
-        
-        .page-header {
-            background: white;
-            padding: 2rem 0;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        
-        .page-title {
-            font-size: 2rem;
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 0.5rem;
-        }
-        
-        .categories-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin: 2rem 0;
-        }
-        
-        .categories-tree, .category-form {
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .section-header {
-            background: #f7fafc;
-            padding: 1rem;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .section-header h3 {
-            color: #4a5568;
-            font-size: 1.2rem;
-        }
-        
-        .btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-            transition: all 0.2s;
-        }
-        
-        .btn-primary {
-            background: #667eea;
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: #5a6fd8;
-        }
-        
-        .btn-secondary {
-            background: #e2e8f0;
-            color: #4a5568;
-        }
-        
-        .btn-secondary:hover {
-            background: #cbd5e0;
-        }
-        
-        .btn-danger {
-            background: #f56565;
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            background: #e53e3e;
-        }
-        
-        .btn-success {
-            background: #48bb78;
-            color: white;
-        }
-        
-        .btn-success:hover {
-            background: #38a169;
-        }
-        
-        .tree-container {
-            padding: 1rem;
-            max-height: 600px;
-            overflow-y: auto;
-        }
-        
-        .tree-item {
-            margin: 0.5rem 0;
-            padding: 0.75rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            background: #fafafa;
-            transition: all 0.2s;
-        }
-        
-        .tree-item:hover {
-            background: #f0f4f8;
-            border-color: #cbd5e0;
-        }
-        
-        .tree-item.level-1 {
-            margin-left: 0;
-            background: #f8fafc;
-            border-left: 4px solid #667eea;
-        }
-        
-        .tree-item.level-2 {
-            margin-left: 2rem;
-            background: #f0f4f8;
-            border-left: 4px solid #4fd1c7;
-        }
-        
-        .tree-item.level-3 {
-            margin-left: 4rem;
-            background: #f7fafc;
-            border-left: 4px solid #9f7aea;
-        }
-        
-        .category-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .category-details {
-            flex: 1;
-        }
-        
-        .category-name {
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 0.25rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .category-meta {
-            color: #718096;
-            font-size: 0.9rem;
-        }
-        
-        .category-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-        
-        .category-icon {
-            font-size: 1.2rem;
-        }
-        
-        .form-container {
-            padding: 1.5rem;
-        }
-        
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: #4a5568;
-        }
-        
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 5px;
-            font-size: 0.9rem;
-        }
-        
-        .form-group textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-        
-        .form-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
-            margin-top: 1.5rem;
-        }
-        
-        .badge {
-            padding: 0.25rem 0.5rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            margin-left: 0.5rem;
-        }
-        
-        .badge.active {
-            background: #f0fff4;
-            color: #22543d;
-        }
-        
-        .badge.inactive {
-            background: #fed7d7;
-            color: #742a2a;
-        }
-        
-        .badge.has-children {
-            background: #e6fffa;
-            color: #234e52;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1rem;
-            padding: 1rem;
-            background: #f8fafc;
-        }
-        
-        .stat-card {
-            background: white;
-            padding: 1rem;
-            border-radius: 8px;
-            text-align: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        
-        .stat-card h4 {
-            font-size: 1.5rem;
-            color: #667eea;
-            margin-bottom: 0.5rem;
-        }
-        
-        .stat-card p {
-            color: #4a5568;
-            font-size: 0.9rem;
-        }
-        
-        .no-categories {
-            text-align: center;
-            padding: 3rem;
-            color: #a0aec0;
-        }
-        
-        .no-categories h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-        
-        .expand-toggle {
-            cursor: pointer;
-            margin-right: 0.5rem;
-            transition: transform 0.2s;
-        }
-        
-        .expand-toggle.expanded {
-            transform: rotate(90deg);
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">🧽 Clean Admin</div>
-                <nav class="nav-links">
-                    <a href="{{ route('admin.clean.dashboard') }}">Dashboard</a>
-                    <a href="{{ route('admin.clean.products') }}">Productos</a>
-                    <a href="{{ route('admin.clean.brands.index') }}">Marcas</a>
-                    <a href="{{ route('admin.clean.categories') }}">Categorías</a>
-                    <a href="{{ route('admin.clean.ingredients') }}">Ingredientes</a>
-                    <a href="{{ route('admin.clean.safety') }}">Seguridad</a>
-                    <a href="{{ route('admin.clean.analytics') }}">Análisis</a>
-                    <a href="{{ route('admin.clean.settings') }}">Configuración</a>
-                </nav>
-            </div>
-        </div>
-    </header>
+@extends('clean-admin::layouts.admin')
 
-    <div class="container">
-        <div class="page-header">
-            <h1 class="page-title">📁 Gestión de Categorías</h1>
-            <p>Organiza y administra las categorías de productos de limpieza</p>
-        </div>
+@section('title', 'Gestión de Categorías')
 
-        <div class="categories-container">
-            <!-- Árbol de Categorías -->
-            <div class="categories-tree">
-                <div class="section-header">
-                    <h3>🌳 Árbol de Categorías</h3>
-                    <button class="btn btn-secondary" onclick="expandAll()">📖 Expandir Todo</button>
+@section('content')
+<div class="space-y-6">
+    <!-- Header con estadísticas -->
+    <div class="bg-white shadow-sm rounded-lg border border-gray-200">
+        <div class="px-4 py-5 sm:p-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">🏷️ Gestión de Categorías</h1>
+                    <p class="mt-1 text-sm text-gray-500">Organiza y administra las categorías de productos de limpieza</p>
                 </div>
-
-                @if($categories && count($categories) > 0)
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <h4>{{ collect($categories)->flatten()->count() }}</h4>
-                            <p>Total</p>
+                <div class="mt-4 sm:mt-0 flex flex-col sm:flex-row sm:items-center gap-3">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                        <div class="bg-gray-50 px-3 py-2 rounded-lg">
+                            <div class="text-lg font-semibold text-gray-900">{{ $totalCategories }}</div>
+                            <div class="text-xs text-gray-500">Total</div>
                         </div>
-                        <div class="stat-card">
-                            <h4>{{ collect($categories)->where('is_active', true)->count() }}</h4>
-                            <p>Activas</p>
+                        <div class="bg-emerald-50 px-3 py-2 rounded-lg">
+                            <div class="text-lg font-semibold text-emerald-600">{{ $activeCategories }}</div>
+                            <div class="text-xs text-emerald-600">Activas</div>
                         </div>
-                        <div class="stat-card">
-                            <h4>{{ collect($categories)->where('parent_id', null)->count() }}</h4>
-                            <p>Principales</p>
+                        <div class="bg-blue-50 px-3 py-2 rounded-lg">
+                            <div class="text-lg font-semibold text-blue-600">{{ $rootCategories }}</div>
+                            <div class="text-xs text-blue-600">Principales</div>
+                        </div>
+                        <div class="bg-purple-50 px-3 py-2 rounded-lg">
+                            <div class="text-lg font-semibold text-purple-600">{{ $professionalCategories }}</div>
+                            <div class="text-xs text-purple-600">Profesional</div>
                         </div>
                     </div>
-
-                    <div class="tree-container">
-                        @foreach($categories as $category)
-                            @include('clean-admin::categories.partials.category-tree-item', ['category' => $category, 'level' => 1])
-                        @endforeach
-                    </div>
-                @else
-                    <div class="no-categories">
-                        <h3>No hay categorías creadas</h3>
-                        <p>Comienza creando tu primera categoría usando el formulario.</p>
-                    </div>
-                @endif
-            </div>
-
-            <!-- Formulario de Categoría -->
-            <div class="category-form">
-                <div class="section-header">
-                    <h3>📝 <span id="form-title">Nueva Categoría</span></h3>
-                    <button class="btn btn-secondary" onclick="resetForm()">🔄 Limpiar</button>
-                </div>
-
-                <div class="form-container">
-                    <form id="category-form" action="#" method="POST">
-                        @csrf
-                        <input type="hidden" id="category-id" name="id" value="">
-                        
-                        <div class="form-group">
-                            <label for="name">Nombre *</label>
-                            <input type="text" id="name" name="name" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="slug">Slug</label>
-                            <input type="text" id="slug" name="slug" placeholder="Se genera automáticamente">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="parent_id">Categoría Padre</label>
-                            <select id="parent_id" name="parent_id">
-                                <option value="">-- Categoría Principal --</option>
-                                @if($categories)
-                                    @foreach($categories as $category)
-                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                    @endforeach
-                                @endif
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="description">Descripción</label>
-                            <textarea id="description" name="description" placeholder="Descripción de la categoría"></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="sort_order">Orden</label>
-                            <input type="number" id="sort_order" name="sort_order" value="0" min="0">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="is_active">Estado</label>
-                            <select id="is_active" name="is_active">
-                                <option value="1">Activa</option>
-                                <option value="0">Inactiva</option>
-                            </select>
-                        </div>
-
-                        <div class="form-actions">
-                            <button type="button" class="btn btn-secondary" onclick="resetForm()">Cancelar</button>
-                            <button type="submit" class="btn btn-success">💾 Guardar</button>
-                        </div>
-                    </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
-        // Generate slug from name
-        document.getElementById('name').addEventListener('input', function() {
-            const name = this.value;
-            const slug = name.toLowerCase()
-                .replace(/[^a-z0-9 -]/g, '')
-                .replace(/\s+/g, '-')
-                .replace(/-+/g, '-')
-                .trim('-');
-            document.getElementById('slug').value = slug;
+    <!-- Filtros y Acciones -->
+    <div class="bg-white shadow-sm rounded-lg border border-gray-200">
+        <div class="px-4 py-4 border-b border-gray-200">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+                <!-- Botones de acción principales -->
+                <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+                    <a href="{{ route('admin.clean.categories.create') }}" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center justify-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        <span class="hidden sm:inline">Nueva Categoría</span>
+                        <span class="sm:hidden">Nueva</span>
+                    </a>
+                    
+                    <button onclick="toggleBulkActions()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center justify-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                        <span class="hidden sm:inline">Acciones Masivas</span>
+                        <span class="sm:hidden">Masivas</span>
+                    </button>
+                    
+                    <a href="{{ route('admin.clean.categories.export') }}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center justify-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <span class="hidden sm:inline">Exportar</span>
+                        <span class="sm:hidden">📥</span>
+                    </a>
+                </div>
+
+                <!-- Buscador móvil -->
+                <div class="lg:hidden">
+                    <form method="GET" action="{{ route('admin.clean.categories.index') }}">
+                        <div class="relative">
+                            <input type="text" name="search" value="{{ $filters['search'] ?? '' }}" 
+                                   placeholder="Buscar categorías..." 
+                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros avanzados desktop -->
+        <div class="hidden lg:block px-4 py-4 bg-gray-50 border-b border-gray-200">
+            <form method="GET" action="{{ route('admin.clean.categories.index') }}" class="grid grid-cols-1 md:grid-cols-6 gap-4">
+                <div>
+                    <input type="text" name="search" value="{{ $filters['search'] ?? '' }}" 
+                           placeholder="Buscar..." 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                </div>
+                
+                <div>
+                    <select name="usage_area" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                        <option value="">Área de uso</option>
+                        @foreach($usageAreas as $area)
+                            <option value="{{ $area }}" {{ ($filters['usage_area'] ?? '') === $area ? 'selected' : '' }}>
+                                {{ $area }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <select name="surface_type" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                        <option value="">Tipo superficie</option>
+                        @foreach($surfaceTypes as $type)
+                            <option value="{{ $type }}" {{ ($filters['surface_type'] ?? '') === $type ? 'selected' : '' }}>
+                                {{ $type }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <select name="parent_id" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                        <option value="">Categoría padre</option>
+                        <option value="root" {{ ($filters['parent_id'] ?? '') === 'root' ? 'selected' : '' }}>
+                            Solo principales
+                        </option>
+                        @foreach($parentCategories as $parent)
+                            <option value="{{ $parent->id }}" {{ ($filters['parent_id'] ?? '') == $parent->id ? 'selected' : '' }}>
+                                {{ $parent->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <select name="status" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                        <option value="">Estado</option>
+                        <option value="1" {{ ($filters['status'] ?? '') === '1' ? 'selected' : '' }}>Activa</option>
+                        <option value="0" {{ ($filters['status'] ?? '') === '0' ? 'selected' : '' }}>Inactiva</option>
+                    </select>
+                </div>
+
+                <div class="flex gap-2">
+                    <button type="submit" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200">
+                        Filtrar
+                    </button>
+                    <a href="{{ route('admin.clean.categories.index') }}" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 text-center">
+                        Limpiar
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Acciones masivas (oculto por defecto) -->
+        <div id="bulk-actions" class="hidden px-4 py-3 bg-yellow-50 border-b border-yellow-200">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div class="text-sm text-yellow-800">
+                    <span id="selected-count">0</span> categorías seleccionadas
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="bulkAction('activate')" class="bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1 rounded text-sm">
+                        Activar
+                    </button>
+                    <button onclick="bulkAction('deactivate')" class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm">
+                        Desactivar
+                    </button>
+                    <button onclick="bulkAction('toggle_professional')" class="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded text-sm">
+                        Alternar Profesional
+                    </button>
+                    <button onclick="bulkAction('export')" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">
+                        Exportar
+                    </button>
+                    <button onclick="bulkAction('delete')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">
+                        Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de categorías -->
+    <div class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
+        @if($categories->count() > 0)
+            <!-- Vista desktop -->
+            <div class="hidden lg:block overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left">
+                                <input type="checkbox" id="select-all" class="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500">
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Categoría
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Jerarquía
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Uso/Superficie
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Productos
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Estado
+                            </th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Acciones
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach($categories as $category)
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4">
+                                    <input type="checkbox" name="category_ids[]" value="{{ $category->id }}" 
+                                           class="category-checkbox rounded border-gray-300 text-emerald-600 focus:ring-emerald-500">
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            @if($category->image)
+                                                <img class="h-10 w-10 rounded-lg object-cover" 
+                                                     src="{{ Storage::url($category->image) }}" 
+                                                     alt="{{ $category->name }}">
+                                            @else
+                                                <div class="h-10 w-10 rounded-lg bg-emerald-100 flex items-center justify-center">
+                                                    <span class="text-emerald-600 font-medium text-sm">
+                                                        {{ $category->icon ?? '🏷️' }}
+                                                    </span>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">
+                                                <a href="{{ route('admin.clean.categories.show', $category) }}" class="hover:text-emerald-600">
+                                                    {{ $category->name }}
+                                                </a>
+                                            </div>
+                                            <div class="text-sm text-gray-500">{{ $category->slug }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm text-gray-900">
+                                        @if($category->parent)
+                                            <span class="text-gray-400">↳</span> {{ $category->parent->name }}
+                                        @else
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                Principal
+                                            </span>
+                                        @endif
+                                    </div>
+                                    @if($category->children_count > 0)
+                                        <div class="text-xs text-gray-500">
+                                            {{ $category->children_count }} subcategorías
+                                        </div>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="space-y-1">
+                                        @if($category->usage_area)
+                                            <div class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                {{ $category->usage_area }}
+                                            </div>
+                                        @endif
+                                        @if($category->surface_type)
+                                            <div class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                                {{ $category->surface_type }}
+                                            </div>
+                                        @endif
+                                        @if($category->professional_use)
+                                            <div class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                                Profesional
+                                            </div>
+                                        @endif
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-900">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                                        {{ $category->products_count }} productos
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    @if($category->status)
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            Activa
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            Inactiva
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <div class="flex items-center justify-center space-x-2">
+                                        <a href="{{ route('admin.clean.categories.show', $category) }}" 
+                                           class="bg-blue-500 hover:bg-blue-600 text-white w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                            </svg>
+                                        </a>
+                                        <a href="{{ route('admin.clean.categories.edit', $category) }}" 
+                                           class="bg-yellow-500 hover:bg-yellow-600 text-white w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                            </svg>
+                                        </a>
+                                        <form method="POST" action="{{ route('admin.clean.categories.destroy', $category) }}" class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" 
+                                                    onclick="return confirm('¿Estás seguro de eliminar esta categoría?')"
+                                                    class="bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Vista móvil -->
+            <div class="lg:hidden">
+                @foreach($categories as $category)
+                    <div class="border-b border-gray-200 p-4">
+                        <div class="flex items-start space-x-3">
+                            <input type="checkbox" name="category_ids[]" value="{{ $category->id }}" 
+                                   class="category-checkbox mt-1 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500">
+                            
+                            <div class="flex-shrink-0">
+                                @if($category->image)
+                                    <img class="h-12 w-12 rounded-lg object-cover" 
+                                         src="{{ Storage::url($category->image) }}" 
+                                         alt="{{ $category->name }}">
+                                @else
+                                    <div class="h-12 w-12 rounded-lg bg-emerald-100 flex items-center justify-center">
+                                        <span class="text-emerald-600 font-medium">
+                                            {{ $category->icon ?? '🏷️' }}
+                                        </span>
+                                    </div>
+                                @endif
+                            </div>
+                            
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-sm font-medium text-gray-900 truncate">
+                                        <a href="{{ route('admin.clean.categories.show', $category) }}" class="hover:text-emerald-600">
+                                            {{ $category->name }}
+                                        </a>
+                                    </h3>
+                                    <div class="flex items-center space-x-1 ml-2">
+                                        <a href="{{ route('admin.clean.categories.show', $category) }}" 
+                                           class="bg-blue-500 hover:bg-blue-600 text-white w-8 h-8 rounded-lg flex items-center justify-center">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                            </svg>
+                                        </a>
+                                        <a href="{{ route('admin.clean.categories.edit', $category) }}" 
+                                           class="bg-yellow-500 hover:bg-yellow-600 text-white w-8 h-8 rounded-lg flex items-center justify-center">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-1 flex items-center space-x-2 text-sm text-gray-500">
+                                    @if($category->parent)
+                                        <span class="text-gray-400">↳</span>
+                                        <span>{{ $category->parent->name }}</span>
+                                    @else
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            Principal
+                                        </span>
+                                    @endif
+                                </div>
+
+                                <div class="mt-2 flex flex-wrap gap-1">
+                                    @if($category->usage_area)
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                            {{ $category->usage_area }}
+                                        </span>
+                                    @endif
+                                    @if($category->surface_type)
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                            {{ $category->surface_type }}
+                                        </span>
+                                    @endif
+                                    @if($category->professional_use)
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                            Profesional
+                                        </span>
+                                    @endif
+                                </div>
+
+                                <div class="mt-2 flex items-center justify-between">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                                            {{ $category->products_count }} productos
+                                        </span>
+                                        @if($category->children_count > 0)
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                {{ $category->children_count }} subcategorías
+                                            </span>
+                                        @endif
+                                    </div>
+                                    
+                                    @if($category->status)
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            Activa
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            Inactiva
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            <!-- Paginación -->
+            <div class="px-4 py-3 border-t border-gray-200 sm:px-6">
+                {{ $categories->links() }}
+            </div>
+        @else
+            <div class="text-center py-12">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">No hay categorías</h3>
+                <p class="mt-1 text-sm text-gray-500">Comienza creando tu primera categoría de productos.</p>
+                <div class="mt-6">
+                    <a href="{{ route('admin.clean.categories.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700">
+                        <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Nueva Categoría
+                    </a>
+                </div>
+            </div>
+        @endif
+    </div>
+</div>
+
+@push('scripts')
+<script>
+    // Toggle bulk actions
+    function toggleBulkActions() {
+        const bulkActions = document.getElementById('bulk-actions');
+        bulkActions.classList.toggle('hidden');
+        updateSelectedCount();
+    }
+
+    // Select all checkboxes
+    document.getElementById('select-all')?.addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('.category-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
         });
+        updateSelectedCount();
+    });
 
-        // Edit category
-        function editCategory(id, name, slug, parentId, description, sortOrder, isActive) {
-            document.getElementById('form-title').textContent = 'Editar Categoría';
-            document.getElementById('category-id').value = id;
-            document.getElementById('name').value = name;
-            document.getElementById('slug').value = slug;
-            document.getElementById('parent_id').value = parentId || '';
-            document.getElementById('description').value = description || '';
-            document.getElementById('sort_order').value = sortOrder || 0;
-            document.getElementById('is_active').value = isActive ? '1' : '0';
+    // Update selected count
+    function updateSelectedCount() {
+        const checkedBoxes = document.querySelectorAll('.category-checkbox:checked');
+        const count = checkedBoxes.length;
+        document.getElementById('selected-count').textContent = count;
+        
+        if (count > 0) {
+            document.getElementById('bulk-actions').classList.remove('hidden');
+        } else {
+            document.getElementById('bulk-actions').classList.add('hidden');
+        }
+    }
+
+    // Add event listeners to checkboxes
+    document.querySelectorAll('.category-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', updateSelectedCount);
+    });
+
+    // Bulk actions
+    function bulkAction(action) {
+        const checkedBoxes = document.querySelectorAll('.category-checkbox:checked');
+        const categoryIds = Array.from(checkedBoxes).map(cb => cb.value);
+        
+        if (categoryIds.length === 0) {
+            alert('Selecciona al menos una categoría');
+            return;
         }
 
-        // Reset form
-        function resetForm() {
-            document.getElementById('form-title').textContent = 'Nueva Categoría';
-            document.getElementById('category-form').reset();
-            document.getElementById('category-id').value = '';
+        if (action === 'delete' && !confirm(`¿Estás seguro de eliminar ${categoryIds.length} categorías?`)) {
+            return;
         }
 
-        // Delete category
-        function deleteCategory(id, name) {
-            if (confirm(`¿Estás seguro de que quieres eliminar la categoría "${name}"?`)) {
-                // Here you would make an AJAX request to delete the category
-                console.log('Deleting category:', id);
-            }
-        }
-
-        // Toggle category expansion
-        function toggleCategory(element) {
-            const toggle = element.querySelector('.expand-toggle');
-            const children = element.parentElement.querySelector('.children');
-            
-            if (children) {
-                if (children.style.display === 'none') {
-                    children.style.display = 'block';
-                    toggle.classList.add('expanded');
+        fetch('{{ route("admin.clean.categories.bulk-action") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                action: action,
+                category_ids: categoryIds
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                if (action === 'export') {
+                    // Handle export download
+                    window.location.href = data.download_url;
                 } else {
-                    children.style.display = 'none';
-                    toggle.classList.remove('expanded');
+                    window.location.reload();
                 }
+            } else {
+                alert('Error: ' + data.message);
             }
-        }
-
-        // Expand all categories
-        function expandAll() {
-            const toggles = document.querySelectorAll('.expand-toggle');
-            const children = document.querySelectorAll('.children');
-            
-            toggles.forEach(toggle => toggle.classList.add('expanded'));
-            children.forEach(child => child.style.display = 'block');
-        }
-
-        // Form submission
-        document.getElementById('category-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(this);
-            const isEditing = document.getElementById('category-id').value !== '';
-            
-            console.log('Form data:', Object.fromEntries(formData));
-            
-            // Here you would make an AJAX request to save the category
-            alert(isEditing ? 'Categoría actualizada' : 'Categoría creada');
-            
-            if (!isEditing) {
-                resetForm();
-            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error en la operación');
         });
-    </script>
-</body>
-</html>
+    }
+</script>
+@endpush
+@endsection

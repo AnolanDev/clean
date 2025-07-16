@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Clean\Admin\Http\Controllers\AdminController;
 use Clean\Admin\Http\Controllers\ProductController;
 use Clean\Admin\Http\Controllers\BrandController;
+use Clean\Admin\Http\Controllers\CategoryController;
 
 Route::group(['middleware' => ['web']], function () {
     
@@ -52,8 +53,23 @@ Route::group(['middleware' => ['web']], function () {
             Route::get('/export', [BrandController::class, 'export'])->name('export');
         });
         
-        // Categories Management
-        Route::get('/categories', [AdminController::class, 'categories'])->name('categories');
+        // Categories Management - Ruta de compatibilidad
+        Route::get('/categories', [CategoryController::class, 'index'])->name('categories');
+        
+        // Categories Management - Rutas completas CRUD
+        Route::prefix('categories')->name('categories.')->group(function () {
+            Route::get('/', [CategoryController::class, 'index'])->name('index');
+            Route::get('/create', [CategoryController::class, 'create'])->name('create');
+            Route::post('/', [CategoryController::class, 'store'])->name('store');
+            Route::get('/{cleanCategory}', [CategoryController::class, 'show'])->name('show');
+            Route::get('/{cleanCategory}/edit', [CategoryController::class, 'edit'])->name('edit');
+            Route::put('/{cleanCategory}', [CategoryController::class, 'update'])->name('update');
+            Route::delete('/{cleanCategory}', [CategoryController::class, 'destroy'])->name('destroy');
+            
+            // Operaciones adicionales
+            Route::post('/bulk-action', [CategoryController::class, 'bulkAction'])->name('bulk-action');
+            Route::get('/export', [CategoryController::class, 'export'])->name('export');
+        });
         
         // Ingredients Management
         Route::get('/ingredients', [AdminController::class, 'ingredients'])->name('ingredients');

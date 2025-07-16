@@ -470,12 +470,12 @@ function bulkEdit() {
 
 function manageCategories() {
     // Redirigir a gestión de categorías
-    window.location.href = '/admin/clean/categories';
+    window.location.href = '{{ route("admin.clean.categories.index") }}';
 }
 
 function manageBrands() {
     // Redirigir a gestión de marcas
-    window.location.href = '/admin/clean/brands';
+    window.location.href = '{{ route("admin.clean.brands.index") }}';
 }
 
 // Cerrar menú al hacer clic fuera
