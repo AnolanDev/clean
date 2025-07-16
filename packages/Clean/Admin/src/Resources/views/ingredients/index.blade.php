@@ -1,708 +1,544 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Ingredientes - Clean Admin</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f8fafc;
-            color: #2d3748;
-        }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
-        header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 1.5rem 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-        }
-        
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            transition: background-color 0.2s;
-        }
-        
-        .nav-links a:hover {
-            background-color: rgba(255,255,255,0.1);
-        }
-        
-        .page-header {
-            background: white;
-            padding: 2rem 0;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        
-        .page-title {
-            font-size: 2rem;
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 0.5rem;
-        }
-        
-        .filters {
-            background: white;
-            padding: 1.5rem;
-            margin: 2rem 0;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .filters h3 {
-            margin-bottom: 1rem;
-            color: #4a5568;
-        }
-        
-        .filter-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-        }
-        
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .filter-group label {
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: #4a5568;
-        }
-        
-        .filter-group select,
-        .filter-group input {
-            padding: 0.5rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 5px;
-            font-size: 0.9rem;
-        }
-        
-        .btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-            transition: all 0.2s;
-        }
-        
-        .btn-primary {
-            background: #667eea;
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: #5a6fd8;
-        }
-        
-        .btn-secondary {
-            background: #e2e8f0;
-            color: #4a5568;
-        }
-        
-        .btn-secondary:hover {
-            background: #cbd5e0;
-        }
-        
-        .btn-danger {
-            background: #f56565;
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            background: #e53e3e;
-        }
-        
-        .btn-warning {
-            background: #ed8936;
-            color: white;
-        }
-        
-        .btn-warning:hover {
-            background: #dd6b20;
-        }
-        
-        .ingredients-table {
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin: 2rem 0;
-        }
-        
-        .table-header {
-            background: #f7fafc;
-            padding: 1rem;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .table-actions {
-            display: flex;
-            gap: 1rem;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        th, td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        
-        th {
-            background: #f7fafc;
-            font-weight: 600;
-            color: #4a5568;
-        }
-        
-        .ingredient-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .ingredient-icon {
-            font-size: 2rem;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid #e2e8f0;
-        }
-        
-        .ingredient-icon.natural {
-            background: linear-gradient(45deg, #c6f6d5, #9ae6b4);
-        }
-        
-        .ingredient-icon.synthetic {
-            background: linear-gradient(45deg, #fbb6ce, #f687b3);
-        }
-        
-        .ingredient-icon.chemical {
-            background: linear-gradient(45deg, #fed7d7, #feb2b2);
-        }
-        
-        .ingredient-details h4 {
-            margin-bottom: 0.25rem;
-            color: #2d3748;
-        }
-        
-        .ingredient-details p {
-            color: #718096;
-            font-size: 0.9rem;
-        }
-        
-        .badge {
-            padding: 0.25rem 0.5rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            margin-right: 0.5rem;
-        }
-        
-        .badge.safe {
-            background: #f0fff4;
-            color: #22543d;
-        }
-        
-        .badge.warning {
-            background: #fef5e7;
-            color: #744210;
-        }
-        
-        .badge.danger {
-            background: #fed7d7;
-            color: #742a2a;
-        }
-        
-        .badge.natural {
-            background: #e6fffa;
-            color: #234e52;
-        }
-        
-        .badge.synthetic {
-            background: #faf5ff;
-            color: #553c9a;
-        }
-        
-        .badge.chemical {
-            background: #fff5f5;
-            color: #742a2a;
-        }
-        
-        .actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-        
-        .safety-indicator {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .safety-dots {
-            display: flex;
-            gap: 2px;
-        }
-        
-        .safety-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #e2e8f0;
-        }
-        
-        .safety-dot.active {
-            background: #48bb78;
-        }
-        
-        .safety-dot.warning {
-            background: #ed8936;
-        }
-        
-        .safety-dot.danger {
-            background: #f56565;
-        }
-        
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 1rem;
-            margin: 2rem 0;
-        }
-        
-        .pagination a {
-            padding: 0.5rem 1rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 5px;
-            text-decoration: none;
-            color: #4a5568;
-            transition: all 0.2s;
-        }
-        
-        .pagination a:hover {
-            background: #f7fafc;
-        }
-        
-        .pagination .active {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-        
-        .no-ingredients {
-            text-align: center;
-            padding: 3rem;
-            color: #a0aec0;
-        }
-        
-        .no-ingredients h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-        
-        .stat-card {
-            background: #f8fafc;
-            padding: 1rem;
-            border-radius: 8px;
-            text-align: center;
-        }
-        
-        .stat-card h4 {
-            font-size: 1.5rem;
-            color: #667eea;
-            margin-bottom: 0.5rem;
-        }
-        
-        .stat-card p {
-            color: #4a5568;
-            font-size: 0.9rem;
-        }
-        
-        .ingredient-modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-        }
-        
-        .modal-content {
-            background-color: white;
-            margin: 5% auto;
-            padding: 2rem;
-            border-radius: 10px;
-            width: 80%;
-            max-width: 600px;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-        
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        
-        .close:hover {
-            color: black;
-        }
-        
-        .modal-header {
-            margin-bottom: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        
-        .modal-section {
-            margin-bottom: 1.5rem;
-        }
-        
-        .modal-section h4 {
-            margin-bottom: 0.5rem;
-            color: #4a5568;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">🧽 Clean Admin</div>
-                <nav class="nav-links">
-                    <a href="{{ route('admin.clean.dashboard') }}">Dashboard</a>
-                    <a href="{{ route('admin.clean.products') }}">Productos</a>
-                    <a href="{{ route('admin.clean.brands.index') }}">Marcas</a>
-                    <a href="{{ route('admin.clean.categories.index') }}">Categorías</a>
-                    <a href="{{ route('admin.clean.ingredients') }}">Ingredientes</a>
-                    <a href="{{ route('admin.clean.safety') }}">Seguridad</a>
-                    <a href="{{ route('admin.clean.analytics') }}">Análisis</a>
-                    <a href="{{ route('admin.clean.settings') }}">Configuración</a>
-                </nav>
-            </div>
-        </div>
-    </header>
+@extends('clean-admin::layouts.admin')
 
-    <div class="container">
-        <div class="page-header">
-            <h1 class="page-title">🧪 Gestión de Ingredientes</h1>
-            <p>Administra los ingredientes y componentes químicos de productos de limpieza</p>
-        </div>
+@section('title', 'Gestión de Ingredientes')
 
-        <div class="filters">
-            <h3>🔍 Filtros</h3>
-            <form method="GET" action="{{ route('admin.clean.ingredients') }}">
-                <div class="filter-grid">
-                    <div class="filter-group">
-                        <label>Tipo de Ingrediente</label>
-                        <select name="type">
-                            <option value="">Todos los tipos</option>
-                            <option value="natural" {{ request('type') == 'natural' ? 'selected' : '' }}>Natural</option>
-                            <option value="synthetic" {{ request('type') == 'synthetic' ? 'selected' : '' }}>Sintético</option>
-                            <option value="chemical" {{ request('type') == 'chemical' ? 'selected' : '' }}>Químico</option>
-                        </select>
-                    </div>
-                    
-                    <div class="filter-group">
-                        <label>Nivel de Seguridad</label>
-                        <select name="safety_level">
-                            <option value="">Todos los niveles</option>
-                            <option value="safe" {{ request('safety_level') == 'safe' ? 'selected' : '' }}>Seguro</option>
-                            <option value="mild" {{ request('safety_level') == 'mild' ? 'selected' : '' }}>Suave</option>
-                            <option value="moderate" {{ request('safety_level') == 'moderate' ? 'selected' : '' }}>Moderado</option>
-                            <option value="high" {{ request('safety_level') == 'high' ? 'selected' : '' }}>Alto riesgo</option>
-                        </select>
-                    </div>
-                    
-                    <div class="filter-group">
-                        <label>Origen</label>
-                        <select name="natural">
-                            <option value="">Todos los orígenes</option>
-                            <option value="1" {{ request('natural') == '1' ? 'selected' : '' }}>Natural</option>
-                            <option value="0" {{ request('natural') == '0' ? 'selected' : '' }}>Sintético</option>
-                        </select>
-                    </div>
-                    
-                    <div class="filter-group">
-                        <label>Búsqueda</label>
-                        <input type="text" name="search" placeholder="Buscar ingredientes..." value="{{ request('search') }}">
+@section('content')
+<div class="space-y-6">
+    <!-- Header con estadísticas -->
+    <div class="bg-white shadow-sm rounded-lg border border-gray-200">
+        <div class="px-4 py-5 sm:p-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">🧪 Gestión de Ingredientes</h1>
+                    <p class="mt-1 text-sm text-gray-500">Administra y supervisa los ingredientes de productos de limpieza</p>
+                </div>
+                <div class="mt-4 sm:mt-0 flex flex-col sm:flex-row sm:items-center gap-3">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                        <div class="bg-gray-50 px-3 py-2 rounded-lg">
+                            <div class="text-lg font-semibold text-gray-900">{{ $totalIngredients }}</div>
+                            <div class="text-xs text-gray-500">Total</div>
+                        </div>
+                        <div class="bg-green-50 px-3 py-2 rounded-lg">
+                            <div class="text-lg font-semibold text-green-600">{{ $naturalIngredients }}</div>
+                            <div class="text-xs text-green-600">Naturales</div>
+                        </div>
+                        <div class="bg-blue-50 px-3 py-2 rounded-lg">
+                            <div class="text-lg font-semibold text-blue-600">{{ $biodegradableIngredients }}</div>
+                            <div class="text-xs text-blue-600">Biodegradables</div>
+                        </div>
+                        <div class="bg-red-50 px-3 py-2 rounded-lg">
+                            <div class="text-lg font-semibold text-red-600">{{ $hazardousIngredients }}</div>
+                            <div class="text-xs text-red-600">Peligrosos</div>
+                        </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros y Acciones -->
+    <div class="bg-white shadow-sm rounded-lg border border-gray-200">
+        <div class="px-4 py-4 border-b border-gray-200">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+                <!-- Botones de acción principales -->
+                <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+                    <a href="{{ route('admin.clean.ingredients.create') }}" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center justify-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        <span class="hidden sm:inline">Nuevo Ingrediente</span>
+                        <span class="sm:hidden">Nuevo</span>
+                    </a>
+                    
+                    <button onclick="toggleBulkActions()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center justify-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                        <span class="hidden sm:inline">Acciones Masivas</span>
+                        <span class="sm:hidden">Masivas</span>
+                    </button>
+                    
+                    <a href="{{ route('admin.clean.ingredients.export') }}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center justify-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <span class="hidden sm:inline">Exportar</span>
+                        <span class="sm:hidden">📥</span>
+                    </a>
+                </div>
+
+                <!-- Buscador móvil -->
+                <div class="lg:hidden">
+                    <form method="GET" action="{{ route('admin.clean.ingredients.index') }}">
+                        <div class="relative">
+                            <input type="text" name="search" value="{{ $filters['search'] ?? '' }}" 
+                                   placeholder="Buscar ingredientes..." 
+                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros avanzados desktop -->
+        <div class="hidden lg:block px-4 py-4 bg-gray-50 border-b border-gray-200">
+            <form method="GET" action="{{ route('admin.clean.ingredients.index') }}" class="grid grid-cols-1 md:grid-cols-6 gap-4">
+                <div>
+                    <input type="text" name="search" value="{{ $filters['search'] ?? '' }}" 
+                           placeholder="Buscar..." 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                </div>
                 
-                <div style="margin-top: 1rem;">
-                    <button type="submit" class="btn btn-primary">Aplicar Filtros</button>
-                    <a href="{{ route('admin.clean.ingredients') }}" class="btn btn-secondary">Limpiar</a>
+                <div>
+                    <select name="type" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                        <option value="">Tipo</option>
+                        @foreach($ingredientTypes as $type)
+                            <option value="{{ $type }}" {{ ($filters['type'] ?? '') === $type ? 'selected' : '' }}>
+                                {{ ucfirst($type) }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <select name="safety_level" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                        <option value="">Nivel seguridad</option>
+                        @foreach($safetyLevels as $level)
+                            <option value="{{ $level }}" {{ ($filters['safety_level'] ?? '') === $level ? 'selected' : '' }}>
+                                {{ ucfirst($level) }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <select name="is_natural" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                        <option value="">Origen</option>
+                        <option value="1" {{ ($filters['is_natural'] ?? '') === '1' ? 'selected' : '' }}>Natural</option>
+                        <option value="0" {{ ($filters['is_natural'] ?? '') === '0' ? 'selected' : '' }}>Sintético</option>
+                    </select>
+                </div>
+
+                <div>
+                    <select name="is_biodegradable" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                        <option value="">Biodegradable</option>
+                        <option value="1" {{ ($filters['is_biodegradable'] ?? '') === '1' ? 'selected' : '' }}>Sí</option>
+                        <option value="0" {{ ($filters['is_biodegradable'] ?? '') === '0' ? 'selected' : '' }}>No</option>
+                    </select>
+                </div>
+
+                <div class="flex gap-2">
+                    <button type="submit" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200">
+                        Filtrar
+                    </button>
+                    <a href="{{ route('admin.clean.ingredients.index') }}" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 text-center">
+                        Limpiar
+                    </a>
                 </div>
             </form>
         </div>
 
-        <div class="ingredients-table">
-            <div class="table-header">
-                <h3>Lista de Ingredientes</h3>
-                <div class="table-actions">
-                    <a href="#" class="btn btn-primary">➕ Nuevo Ingrediente</a>
-                    <a href="#" class="btn btn-secondary">📥 Exportar</a>
-                    <a href="#" class="btn btn-warning">⚠️ Reporte de Seguridad</a>
+        <!-- Acciones masivas (oculto por defecto) -->
+        <div id="bulk-actions" class="hidden px-4 py-3 bg-yellow-50 border-b border-yellow-200">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div class="text-sm text-yellow-800">
+                    <span id="selected-count">0</span> ingredientes seleccionados
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="bulkAction('mark_natural')" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm">
+                        Marcar Natural
+                    </button>
+                    <button onclick="bulkAction('mark_synthetic')" class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm">
+                        Marcar Sintético
+                    </button>
+                    <button onclick="bulkAction('mark_biodegradable')" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">
+                        Marcar Biodegradable
+                    </button>
+                    <button onclick="bulkAction('export')" class="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-1 rounded text-sm">
+                        Exportar
+                    </button>
+                    <button onclick="bulkAction('delete')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">
+                        Eliminar
+                    </button>
                 </div>
             </div>
+        </div>
+    </div>
 
-            @if($ingredients->count() > 0)
-                <div class="stats-grid" style="padding: 1rem;">
-                    <div class="stat-card">
-                        <h4>{{ $ingredients->total() }}</h4>
-                        <p>Total Ingredientes</p>
-                    </div>
-                    <div class="stat-card">
-                        <h4>{{ $ingredients->where('is_natural', true)->count() }}</h4>
-                        <p>Naturales</p>
-                    </div>
-                    <div class="stat-card">
-                        <h4>{{ $ingredients->where('safety_level', 'safe')->count() }}</h4>
-                        <p>Seguros</p>
-                    </div>
-                    <div class="stat-card">
-                        <h4>{{ $ingredients->where('safety_level', 'high')->count() }}</h4>
-                        <p>Alto Riesgo</p>
-                    </div>
-                </div>
-
-                <table>
-                    <thead>
+    <!-- Tabla de ingredientes -->
+    <div class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
+        @if($ingredients->count() > 0)
+            <!-- Vista desktop -->
+            <div class="hidden lg:block overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
                         <tr>
-                            <th><input type="checkbox" id="select-all"></th>
-                            <th>Ingrediente</th>
-                            <th>Tipo</th>
-                            <th>Función</th>
-                            <th>Seguridad</th>
-                            <th>Origen</th>
-                            <th>Acciones</th>
+                            <th class="px-6 py-3 text-left">
+                                <input type="checkbox" id="select-all" class="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500">
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Ingrediente
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Tipo/Función
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Seguridad
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Propiedades
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Productos
+                            </th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Acciones
+                            </th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="bg-white divide-y divide-gray-200">
                         @foreach($ingredients as $ingredient)
-                            <tr>
-                                <td><input type="checkbox" class="ingredient-checkbox" value="{{ $ingredient->id }}"></td>
-                                <td>
-                                    <div class="ingredient-info">
-                                        <div class="ingredient-icon {{ $ingredient->type ?? 'natural' }}">
-                                            @switch($ingredient->type ?? 'natural')
-                                                @case('natural') 🌿 @break
-                                                @case('synthetic') ⚗️ @break
-                                                @case('chemical') 🧪 @break
-                                                @default 🌿
-                                            @endswitch
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4">
+                                    <input type="checkbox" name="ingredient_ids[]" value="{{ $ingredient->id }}" 
+                                           class="ingredient-checkbox rounded border-gray-300 text-emerald-600 focus:ring-emerald-500">
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <div class="h-10 w-10 rounded-lg bg-emerald-100 flex items-center justify-center">
+                                                <span class="text-emerald-600 font-medium text-sm">🧪</span>
+                                            </div>
                                         </div>
-                                        <div class="ingredient-details">
-                                            <h4>{{ $ingredient->name }}</h4>
-                                            <p>{{ $ingredient->chemical_formula ?? 'No especificado' }}</p>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">
+                                                <a href="{{ route('admin.clean.ingredients.show', $ingredient) }}" class="hover:text-emerald-600">
+                                                    {{ $ingredient->name }}
+                                                </a>
+                                            </div>
+                                            <div class="text-sm text-gray-500">
+                                                {{ $ingredient->chemical_name ?? 'Sin nombre químico' }}
+                                            </div>
+                                            @if($ingredient->cas_number)
+                                                <div class="text-xs text-gray-400">CAS: {{ $ingredient->cas_number }}</div>
+                                            @endif
                                         </div>
                                     </div>
                                 </td>
-                                <td>
-                                    <span class="badge {{ $ingredient->type ?? 'natural' }}">
-                                        {{ ucfirst($ingredient->type ?? 'Natural') }}
-                                    </span>
+                                <td class="px-6 py-4">
+                                    <div class="space-y-1">
+                                        <div class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                            {{ ucfirst($ingredient->type) }}
+                                        </div>
+                                    </div>
                                 </td>
-                                <td>{{ $ingredient->function ?? 'No especificado' }}</td>
-                                <td>
-                                    <div class="safety-indicator">
-                                        @switch($ingredient->safety_level ?? 'safe')
-                                            @case('safe')
-                                                <span class="badge safe">✅ Seguro</span>
+                                <td class="px-6 py-4">
+                                    <div class="space-y-1">
+                                        @switch($ingredient->safety_level)
+                                            @case('low')
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                    ✅ Bajo
+                                                </span>
                                                 @break
-                                            @case('mild')
-                                                <span class="badge warning">⚠️ Suave</span>
-                                                @break
-                                            @case('moderate')
-                                                <span class="badge warning">⚠️ Moderado</span>
+                                            @case('medium')
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                    ⚠️ Medio
+                                                </span>
                                                 @break
                                             @case('high')
-                                                <span class="badge danger">☠️ Alto riesgo</span>
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                                    🔶 Alto
+                                                </span>
                                                 @break
-                                            @default
-                                                <span class="badge safe">✅ Seguro</span>
+                                            @case('hazardous')
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                    ☠️ Peligroso
+                                                </span>
+                                                @break
                                         @endswitch
+                                        
+                                        @if($ingredient->hazard_symbols && count($ingredient->hazard_symbols) > 0)
+                                            <div class="flex flex-wrap gap-1 mt-1">
+                                                @foreach($ingredient->hazard_symbols as $symbol)
+                                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-red-100 text-red-700">
+                                                        {{ ucfirst($symbol) }}
+                                                    </span>
+                                                @endforeach
+                                            </div>
+                                        @endif
                                     </div>
                                 </td>
-                                <td>
-                                    @if($ingredient->is_natural)
-                                        <span class="badge natural">🌿 Natural</span>
-                                    @else
-                                        <span class="badge synthetic">⚗️ Sintético</span>
-                                    @endif
+                                <td class="px-6 py-4">
+                                    <div class="space-y-1">
+                                        @if($ingredient->is_natural)
+                                            <div class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                🌿 Natural
+                                            </div>
+                                        @else
+                                            <div class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                🧬 Sintético
+                                            </div>
+                                        @endif
+                                        
+                                        @if($ingredient->is_biodegradable)
+                                            <div class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                ♻️ Biodegradable
+                                            </div>
+                                        @endif
+                                    </div>
                                 </td>
-                                <td>
-                                    <div class="actions">
-                                        <button class="btn btn-primary" onclick="showIngredientDetails({{ $ingredient->id }})">👁️</button>
-                                        <a href="#" class="btn btn-primary">✏️</a>
-                                        <button class="btn btn-danger" onclick="deleteIngredient({{ $ingredient->id }})">🗑️</button>
+                                <td class="px-6 py-4 text-sm text-gray-900">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                                        {{ $ingredient->products_count }} productos
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <div class="flex items-center justify-center space-x-2">
+                                        <a href="{{ route('admin.clean.ingredients.show', $ingredient) }}" 
+                                           class="bg-blue-500 hover:bg-blue-600 text-white w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                            </svg>
+                                        </a>
+                                        <a href="{{ route('admin.clean.ingredients.edit', $ingredient) }}" 
+                                           class="bg-yellow-500 hover:bg-yellow-600 text-white w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                            </svg>
+                                        </a>
+                                        <form method="POST" action="{{ route('admin.clean.ingredients.destroy', $ingredient) }}" class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" 
+                                                    onclick="return confirm('¿Estás seguro de eliminar este ingrediente?')"
+                                                    class="bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                </svg>
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
-
-                <div class="pagination">
-                    {{ $ingredients->links() }}
-                </div>
-            @else
-                <div class="no-ingredients">
-                    <h3>No se encontraron ingredientes</h3>
-                    <p>Intenta ajustar los filtros o crear nuevos ingredientes.</p>
-                </div>
-            @endif
-        </div>
-    </div>
-
-    <!-- Modal para detalles del ingrediente -->
-    <div id="ingredient-modal" class="ingredient-modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <div class="modal-header">
-                <h2 id="modal-title">Detalles del Ingrediente</h2>
             </div>
-            <div id="modal-body">
-                <!-- Contenido dinámico -->
-            </div>
-        </div>
-    </div>
 
-    <script>
-        // Select all checkbox functionality
-        document.getElementById('select-all').addEventListener('change', function() {
-            const checkboxes = document.querySelectorAll('.ingredient-checkbox');
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = this.checked;
-            });
+            <!-- Vista móvil -->
+            <div class="lg:hidden">
+                @foreach($ingredients as $ingredient)
+                    <div class="border-b border-gray-200 p-4">
+                        <div class="flex items-start space-x-3">
+                            <input type="checkbox" name="ingredient_ids[]" value="{{ $ingredient->id }}" 
+                                   class="ingredient-checkbox mt-1 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500">
+                            
+                            <div class="flex-shrink-0">
+                                <div class="h-12 w-12 rounded-lg bg-emerald-100 flex items-center justify-center">
+                                    <span class="text-emerald-600 font-medium text-lg">🧪</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-sm font-medium text-gray-900 truncate">
+                                        <a href="{{ route('admin.clean.ingredients.show', $ingredient) }}" class="hover:text-emerald-600">
+                                            {{ $ingredient->name }}
+                                        </a>
+                                    </h3>
+                                    <div class="flex items-center space-x-1 ml-2">
+                                        <a href="{{ route('admin.clean.ingredients.show', $ingredient) }}" 
+                                           class="bg-blue-500 hover:bg-blue-600 text-white w-8 h-8 rounded-lg flex items-center justify-center">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                            </svg>
+                                        </a>
+                                        <a href="{{ route('admin.clean.ingredients.edit', $ingredient) }}" 
+                                           class="bg-yellow-500 hover:bg-yellow-600 text-white w-8 h-8 rounded-lg flex items-center justify-center">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-1 text-sm text-gray-500">
+                                    {{ $ingredient->chemical_name ?? 'Sin nombre químico' }}
+                                </div>
+                                
+                                @if($ingredient->cas_number)
+                                    <div class="mt-1 text-xs text-gray-400">CAS: {{ $ingredient->cas_number }}</div>
+                                @endif
+
+                                <div class="mt-2 flex flex-wrap gap-1">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        {{ ucfirst($ingredient->type) }}
+                                    </span>
+                                    
+                                    @switch($ingredient->safety_level)
+                                        @case('low')
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                ✅ Bajo
+                                            </span>
+                                            @break
+                                        @case('medium')
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                ⚠️ Medio
+                                            </span>
+                                            @break
+                                        @case('high')
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                                🔶 Alto
+                                            </span>
+                                            @break
+                                        @case('hazardous')
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                ☠️ Peligroso
+                                            </span>
+                                            @break
+                                    @endswitch
+                                </div>
+
+                                <div class="mt-2 flex items-center justify-between">
+                                    <div class="flex items-center space-x-2">
+                                        @if($ingredient->is_natural)
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                🌿 Natural
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                🧬 Sintético
+                                            </span>
+                                        @endif
+                                        
+                                        @if($ingredient->is_biodegradable)
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                ♻️ Biodegradable
+                                            </span>
+                                        @endif
+                                    </div>
+                                    
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                                        {{ $ingredient->products_count }} productos
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            <!-- Paginación -->
+            <div class="px-4 py-3 border-t border-gray-200 sm:px-6">
+                {{ $ingredients->links() }}
+            </div>
+        @else
+            <div class="text-center py-12">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">No hay ingredientes</h3>
+                <p class="mt-1 text-sm text-gray-500">Comienza creando tu primer ingrediente.</p>
+                <div class="mt-6">
+                    <a href="{{ route('admin.clean.ingredients.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700">
+                        <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Nuevo Ingrediente
+                    </a>
+                </div>
+            </div>
+        @endif
+    </div>
+</div>
+
+@push('scripts')
+<script>
+    // Toggle bulk actions
+    function toggleBulkActions() {
+        const bulkActions = document.getElementById('bulk-actions');
+        bulkActions.classList.toggle('hidden');
+        updateSelectedCount();
+    }
+
+    // Select all checkboxes
+    document.getElementById('select-all')?.addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('.ingredient-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
         });
+        updateSelectedCount();
+    });
 
-        // Show ingredient details modal
-        function showIngredientDetails(ingredientId) {
-            // Aquí harías una petición AJAX para obtener los detalles
-            const modal = document.getElementById('ingredient-modal');
-            const modalTitle = document.getElementById('modal-title');
-            const modalBody = document.getElementById('modal-body');
-            
-            modalTitle.textContent = `Ingrediente ID: ${ingredientId}`;
-            modalBody.innerHTML = `
-                <div class="modal-section">
-                    <h4>🧪 Información Química</h4>
-                    <p><strong>Fórmula:</strong> C₈H₁₈O₂</p>
-                    <p><strong>Peso Molecular:</strong> 146.23 g/mol</p>
-                    <p><strong>CAS:</strong> 123-45-6</p>
-                </div>
-                <div class="modal-section">
-                    <h4>⚠️ Información de Seguridad</h4>
-                    <p><strong>Nivel de Peligro:</strong> <span class="badge safe">✅ Seguro</span></p>
-                    <p><strong>Precauciones:</strong> Evitar contacto con los ojos</p>
-                    <p><strong>Efectos secundarios:</strong> Posible irritación en piel sensible</p>
-                </div>
-                <div class="modal-section">
-                    <h4>🌿 Información Ambiental</h4>
-                    <p><strong>Biodegradable:</strong> Sí</p>
-                    <p><strong>Origen:</strong> Natural</p>
-                    <p><strong>Impacto ambiental:</strong> Bajo</p>
-                </div>
-                <div class="modal-section">
-                    <h4>📋 Regulaciones</h4>
-                    <p><strong>Aprobado por:</strong> EPA, FDA</p>
-                    <p><strong>Restricciones:</strong> Ninguna</p>
-                </div>
-            `;
-            
-            modal.style.display = 'block';
+    // Update selected count
+    function updateSelectedCount() {
+        const checkedBoxes = document.querySelectorAll('.ingredient-checkbox:checked');
+        const count = checkedBoxes.length;
+        document.getElementById('selected-count').textContent = count;
+        
+        if (count > 0) {
+            document.getElementById('bulk-actions').classList.remove('hidden');
+        } else {
+            document.getElementById('bulk-actions').classList.add('hidden');
+        }
+    }
+
+    // Add event listeners to checkboxes
+    document.querySelectorAll('.ingredient-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', updateSelectedCount);
+    });
+
+    // Bulk actions
+    function bulkAction(action) {
+        const checkedBoxes = document.querySelectorAll('.ingredient-checkbox:checked');
+        const ingredientIds = Array.from(checkedBoxes).map(cb => cb.value);
+        
+        if (ingredientIds.length === 0) {
+            alert('Selecciona al menos un ingrediente');
+            return;
         }
 
-        // Close modal
-        function closeModal() {
-            document.getElementById('ingredient-modal').style.display = 'none';
+        if (action === 'delete' && !confirm(`¿Estás seguro de eliminar ${ingredientIds.length} ingredientes?`)) {
+            return;
         }
 
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modal = document.getElementById('ingredient-modal');
-            if (event.target === modal) {
-                modal.style.display = 'none';
+        fetch('{{ route("admin.clean.ingredients.bulk-action") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                action: action,
+                ingredient_ids: ingredientIds
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                if (action === 'export') {
+                    // Handle export download
+                    window.location.href = data.download_url;
+                } else {
+                    window.location.reload();
+                }
+            } else {
+                alert('Error: ' + data.message);
             }
-        }
-
-        // Delete ingredient
-        function deleteIngredient(ingredientId) {
-            if (confirm('¿Estás seguro de que quieres eliminar este ingrediente?')) {
-                console.log('Deleting ingredient:', ingredientId);
-                // Aquí harías una petición AJAX para eliminar
-            }
-        }
-
-        // Bulk operations
-        function bulkOperation(operation) {
-            const selected = document.querySelectorAll('.ingredient-checkbox:checked');
-            if (selected.length === 0) {
-                alert('Por favor selecciona al menos un ingrediente.');
-                return;
-            }
-
-            const ids = Array.from(selected).map(checkbox => checkbox.value);
-            console.log(`Bulk ${operation} ingredients:`, ids);
-        }
-    </script>
-</body>
-</html>
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error en la operación');
+        });
+    }
+</script>
+@endpush
+@endsection

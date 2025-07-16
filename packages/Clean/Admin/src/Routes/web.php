@@ -5,6 +5,7 @@ use Clean\Admin\Http\Controllers\AdminController;
 use Clean\Admin\Http\Controllers\ProductController;
 use Clean\Admin\Http\Controllers\BrandController;
 use Clean\Admin\Http\Controllers\CategoryController;
+use Clean\Admin\Http\Controllers\IngredientController;
 
 Route::group(['middleware' => ['web']], function () {
     
@@ -71,8 +72,24 @@ Route::group(['middleware' => ['web']], function () {
             Route::get('/export', [CategoryController::class, 'export'])->name('export');
         });
         
-        // Ingredients Management
-        Route::get('/ingredients', [AdminController::class, 'ingredients'])->name('ingredients');
+        // Ingredients Management - Ruta de compatibilidad
+        Route::get('/ingredients', [IngredientController::class, 'index'])->name('ingredients');
+        
+        // Ingredients Management - Rutas completas CRUD
+        Route::prefix('ingredients')->name('ingredients.')->group(function () {
+            Route::get('/', [IngredientController::class, 'index'])->name('index');
+            Route::get('/create', [IngredientController::class, 'create'])->name('create');
+            Route::post('/', [IngredientController::class, 'store'])->name('store');
+            Route::get('/{cleanIngredient}', [IngredientController::class, 'show'])->name('show');
+            Route::get('/{cleanIngredient}/edit', [IngredientController::class, 'edit'])->name('edit');
+            Route::put('/{cleanIngredient}', [IngredientController::class, 'update'])->name('update');
+            Route::delete('/{cleanIngredient}', [IngredientController::class, 'destroy'])->name('destroy');
+            
+            // Operaciones adicionales
+            Route::post('/bulk-action', [IngredientController::class, 'bulkAction'])->name('bulk-action');
+            Route::get('/export', [IngredientController::class, 'export'])->name('export');
+            Route::get('/{cleanIngredient}/safety-info', [IngredientController::class, 'safetyInfo'])->name('safety-info');
+        });
         
         // Safety Reports
         Route::get('/safety', [AdminController::class, 'safetyReports'])->name('safety');
