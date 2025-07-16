@@ -7,7 +7,7 @@
     <title>@yield('title', 'Clean Admin')</title>
     
     <!-- TailwindCSS Admin -->
-    @vite(['packages/Clean/Admin/resources/assets/css/admin.css'])
+    <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Alpine.js para interactividad -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>

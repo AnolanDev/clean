@@ -17,33 +17,44 @@ class AdminController extends Controller
      */
     public function dashboard()
     {
-        // Datos de prueba para verificar que funciona
+        // Obtener estadísticas reales directamente de los modelos
+        $totalProducts = \Clean\Core\Models\CleanProduct::count();
+        $ecoProducts = \Clean\Core\Models\CleanProduct::where('is_eco_friendly', true)->count();
+        $safeProducts = \Clean\Core\Models\CleanProduct::where('safety_classification', 'non_hazardous')->count();
+        $hazardousProducts = \Clean\Core\Models\CleanProduct::where('safety_classification', 'hazardous')->count();
+        
         $statistics = [
-            'total_products' => 0,
-            'eco_friendly_products' => 0,
-            'hazardous_products' => 0,
-            'safe_products' => 0,
-            'total_brands' => 0,
-            'total_categories' => 0,
-            'total_ingredients' => 0,
-            'hazardous_ingredients' => 0,
-            'eco_percentage' => 0,
-            'safety_percentage' => 0,
+            'total_products' => $totalProducts,
+            'eco_friendly_products' => $ecoProducts,
+            'hazardous_products' => $hazardousProducts,
+            'safe_products' => $safeProducts,
+            'total_brands' => \Clean\Core\Models\CleanBrand::count(),
+            'total_categories' => \Clean\Core\Models\CleanCategory::count(),
+            'total_ingredients' => \Clean\Core\Models\CleanIngredient::count(),
+            'hazardous_ingredients' => \Clean\Core\Models\CleanIngredient::where('safety_level', 'hazardous')->count(),
+            'eco_percentage' => $totalProducts > 0 ? round(($ecoProducts / $totalProducts) * 100, 1) : 0,
+            'safety_percentage' => $totalProducts > 0 ? round(($safeProducts / $totalProducts) * 100, 1) : 0,
         ];
         
-        $recentProducts = collect();
-        $topBrands = collect();
+        // Productos recientes
+        $recentProducts = \Clean\Core\Models\CleanProduct::with(['brand', 'category'])
+            ->orderByDesc('created_at')
+            ->limit(10)
+            ->get();
+            
+        // Top marcas por número de productos
+        $topBrands = \Clean\Core\Models\CleanBrand::withCount('products')
+            ->orderByDesc('products_count')
+            ->limit(5)
+            ->get();
+        
+        // Alertas de seguridad básicas
         $safetyAlerts = [];
-
-        try {
-            // Intentar obtener datos reales del servicio
-            $statistics = $this->adminService->getDashboardStatistics();
-            $recentProducts = $this->adminService->getRecentProducts();
-            $topBrands = $this->adminService->getTopBrands();
-            $safetyAlerts = $this->adminService->getSafetyAlerts();
-        } catch (\Exception $e) {
-            // Si hay error, usar datos de prueba
-            logger()->error('Error en AdminService: ' . $e->getMessage());
+        if ($hazardousProducts > 0) {
+            $safetyAlerts[] = [
+                'message' => "Hay {$hazardousProducts} productos clasificados como peligrosos que requieren revisión.",
+                'action' => 'Revisar productos peligrosos'
+            ];
         }
 
         return view('clean-admin::dashboard', compact(

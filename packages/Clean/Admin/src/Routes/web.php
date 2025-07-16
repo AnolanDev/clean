@@ -6,6 +6,7 @@ use Clean\Admin\Http\Controllers\ProductController;
 use Clean\Admin\Http\Controllers\BrandController;
 use Clean\Admin\Http\Controllers\CategoryController;
 use Clean\Admin\Http\Controllers\IngredientController;
+use Clean\Admin\Http\Controllers\DashboardController;
 
 Route::group(['middleware' => ['web']], function () {
     
@@ -16,6 +17,8 @@ Route::group(['middleware' => ['web']], function () {
         
         // Dashboard
         Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+        Route::get('/dashboard/stats', [DashboardController::class, 'getStats'])->name('dashboard.stats');
+        Route::get('/dashboard/export', [DashboardController::class, 'export'])->name('dashboard.export');
         
         // Products Management - Ruta de compatibilidad
         Route::get('/products', [ProductController::class, 'index'])->name('products');
