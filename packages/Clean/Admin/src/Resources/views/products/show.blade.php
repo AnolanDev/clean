@@ -1,6 +1,6 @@
 @extends('clean-admin::layouts.admin')
 
-@section('title', 'Producto: ' . $product->name)
+@section('title', 'Producto: ' . (is_array($product->name) ? implode(' ', $product->name) : (string) $product->name))
 
 @section('content')
 <div class="container mx-auto px-6 py-8">
@@ -9,10 +9,10 @@
         <div>
             <div class="flex items-center space-x-3 mb-2">
                 <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-lg">
-                    {{ strtoupper(substr($product->name, 0, 2)) }}
+                    {{ strtoupper(substr(is_array($product->name) ? implode(' ', $product->name) : (string) $product->name, 0, 2)) }}
                 </div>
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900">{{ $product->name }}</h1>
+                    <h1 class="text-3xl font-bold text-gray-900">{{ is_array($product->name) ? implode(' ', $product->name) : (string) $product->name }}</h1>
                     <p class="text-gray-600">ID: {{ $product->id }} | {{ $product->brand?->name ?? 'Sin marca' }}</p>
                 </div>
             </div>
@@ -157,14 +157,14 @@
                 @if($product->description)
                     <div class="mt-6">
                         <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">Descripción</h3>
-                        <p class="text-gray-900">{{ $product->description }}</p>
+                        <p class="text-gray-900">{{ is_array($product->description) ? implode(' ', $product->description) : (string) $product->description }}</p>
                     </div>
                 @endif
 
                 @if($product->benefits)
                     <div class="mt-6">
                         <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">Beneficios</h3>
-                        <p class="text-gray-900">{{ $product->benefits }}</p>
+                        <p class="text-gray-900">{{ is_array($product->benefits) ? implode(' ', $product->benefits) : (string) $product->benefits }}</p>
                     </div>
                 @endif
             </div>
@@ -260,7 +260,7 @@
                         @if($product->usage_instructions)
                             <div>
                                 <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">Instrucciones de Uso</h3>
-                                <p class="text-gray-900 whitespace-pre-line">{{ $product->usage_instructions }}</p>
+                                <p class="text-gray-900 whitespace-pre-line">{{ is_array($product->usage_instructions) ? implode(' ', $product->usage_instructions) : (string) $product->usage_instructions }}</p>
                             </div>
                         @endif
 
@@ -268,7 +268,7 @@
                             <div>
                                 <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">Precauciones</h3>
                                 <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
-                                    <p class="text-yellow-800 whitespace-pre-line">{{ $product->precautions }}</p>
+                                    <p class="text-yellow-800 whitespace-pre-line">{{ is_array($product->precautions) ? implode(' ', $product->precautions) : (string) $product->precautions }}</p>
                                 </div>
                             </div>
                         @endif
@@ -277,7 +277,7 @@
                             <div>
                                 <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">Primeros Auxilios</h3>
                                 <div class="bg-red-50 border-l-4 border-red-400 p-4">
-                                    <p class="text-red-800 whitespace-pre-line">{{ $product->first_aid }}</p>
+                                    <p class="text-red-800 whitespace-pre-line">{{ is_array($product->first_aid) ? implode(' ', $product->first_aid) : (string) $product->first_aid }}</p>
                                 </div>
                             </div>
                         @endif
@@ -286,7 +286,7 @@
                             <div>
                                 <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">Condiciones de Almacenamiento</h3>
                                 <div class="bg-blue-50 border-l-4 border-blue-400 p-4">
-                                    <p class="text-blue-800 whitespace-pre-line">{{ $product->storage_conditions }}</p>
+                                    <p class="text-blue-800 whitespace-pre-line">{{ is_array($product->storage_conditions) ? implode(' ', $product->storage_conditions) : (string) $product->storage_conditions }}</p>
                                 </div>
                             </div>
                         @endif

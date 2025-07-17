@@ -2,7 +2,7 @@
 @push('meta')
     <meta
         name="description"
-        content="{{ trim($category->meta_description) != "" ? $category->meta_description : \Illuminate\Support\Str::limit(strip_tags($category->description), 120, '') }}"
+        content="{{ trim($category->meta_description) != "" ? $category->meta_description : \Illuminate\Support\Str::limit(strip_tags(is_array($category->description) ? implode(' ', $category->description) : (string) $category->description), 120, '') }}"
     />
 
     <meta

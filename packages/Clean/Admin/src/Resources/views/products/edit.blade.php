@@ -8,7 +8,7 @@
     <div class="flex items-center justify-between mb-8">
         <div>
             <h1 class="text-3xl font-bold text-gray-900">Editar Producto</h1>
-            <p class="text-gray-600 mt-2">{{ $product->name }}</p>
+            <p class="text-gray-600 mt-2">{{ is_array($product->name) ? implode(' ', $product->name) : (string) $product->name }}</p>
         </div>
         <div class="flex space-x-3">
             <a href="{{ route('admin.clean.products.show', $product) }}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition duration-200 flex items-center">
@@ -57,7 +57,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="md:col-span-2">
                     <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Nombre del Producto *</label>
-                    <input type="text" id="name" name="name" value="{{ old('name', $product->name) }}" required
+                    <input type="text" id="name" name="name" value="{{ old('name', is_array($product->name) ? implode(' ', $product->name) : (string) $product->name) }}" required
                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     @error('name')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -133,7 +133,7 @@
                 <div class="md:col-span-2">
                     <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Descripción</label>
                     <textarea id="description" name="description" rows="3"
-                              class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{{ old('description', $product->description) }}</textarea>
+                              class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{{ old('description', is_array($product->description) ? implode(' ', $product->description) : (string) $product->description) }}</textarea>
                     @error('description')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -142,7 +142,7 @@
                 <div class="md:col-span-2">
                     <label for="benefits" class="block text-sm font-medium text-gray-700 mb-2">Beneficios</label>
                     <textarea id="benefits" name="benefits" rows="2"
-                              class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{{ old('benefits', $product->benefits) }}</textarea>
+                              class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{{ old('benefits', is_array($product->benefits) ? implode(' ', $product->benefits) : (string) $product->benefits) }}</textarea>
                     @error('benefits')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -321,25 +321,25 @@
                 <div>
                     <label for="usage_instructions" class="block text-sm font-medium text-gray-700 mb-2">Instrucciones de Uso</label>
                     <textarea id="usage_instructions" name="usage_instructions" rows="3"
-                              class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{{ old('usage_instructions', $product->usage_instructions) }}</textarea>
+                              class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{{ old('usage_instructions', is_array($product->usage_instructions) ? implode(' ', $product->usage_instructions) : (string) $product->usage_instructions) }}</textarea>
                 </div>
 
                 <div>
                     <label for="precautions" class="block text-sm font-medium text-gray-700 mb-2">Precauciones</label>
                     <textarea id="precautions" name="precautions" rows="2"
-                              class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{{ old('precautions', $product->precautions) }}</textarea>
+                              class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{{ old('precautions', is_array($product->precautions) ? implode(' ', $product->precautions) : (string) $product->precautions) }}</textarea>
                 </div>
 
                 <div>
                     <label for="first_aid" class="block text-sm font-medium text-gray-700 mb-2">Primeros Auxilios</label>
                     <textarea id="first_aid" name="first_aid" rows="2"
-                              class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{{ old('first_aid', $product->first_aid) }}</textarea>
+                              class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{{ old('first_aid', is_array($product->first_aid) ? implode(' ', $product->first_aid) : (string) $product->first_aid) }}</textarea>
                 </div>
 
                 <div>
                     <label for="storage_conditions" class="block text-sm font-medium text-gray-700 mb-2">Condiciones de Almacenamiento</label>
                     <textarea id="storage_conditions" name="storage_conditions" rows="2"
-                              class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{{ old('storage_conditions', $product->storage_conditions) }}</textarea>
+                              class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{{ old('storage_conditions', is_array($product->storage_conditions) ? implode(' ', $product->storage_conditions) : (string) $product->storage_conditions) }}</textarea>
                 </div>
             </div>
         </div>

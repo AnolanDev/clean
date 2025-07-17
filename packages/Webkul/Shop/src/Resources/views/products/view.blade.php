@@ -13,7 +13,7 @@
 
 <!-- SEO Meta Content -->
 @push('meta')
-    <meta name="description" content="{{ trim($product->meta_description) != "" ? $product->meta_description : \Illuminate\Support\Str::limit(strip_tags($product->description), 120, '') }}"/>
+    <meta name="description" content="{{ trim($product->meta_description) != "" ? $product->meta_description : \Illuminate\Support\Str::limit(strip_tags(is_array($product->description) ? implode(' ', $product->description) : (string) $product->description), 120, '') }}"/>
 
     <meta name="keywords" content="{{ $product->meta_keywords }}"/>
 
@@ -29,7 +29,7 @@
 
     <meta name="twitter:title" content="{{ $product->name }}" />
 
-    <meta name="twitter:description" content="{!! htmlspecialchars(trim(strip_tags($product->description))) !!}" />
+    <meta name="twitter:description" content="{!! htmlspecialchars(trim(strip_tags(is_array($product->description) ? implode(' ', $product->description) : (string) $product->description))) !!}" />
 
     <meta name="twitter:image:alt" content="" />
 
@@ -41,7 +41,7 @@
 
     <meta property="og:image" content="{{ $productBaseImage['medium_image_url'] }}" />
 
-    <meta property="og:description" content="{!! htmlspecialchars(trim(strip_tags($product->description))) !!}" />
+    <meta property="og:description" content="{!! htmlspecialchars(trim(strip_tags(is_array($product->description) ? implode(' ', $product->description) : (string) $product->description))) !!}" />
 
     <meta property="og:url" content="{{ route('shop.product_or_category.index', $product->url_key) }}" />
 @endPush

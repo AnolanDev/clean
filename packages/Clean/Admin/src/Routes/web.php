@@ -6,6 +6,7 @@ use Clean\Admin\Http\Controllers\ProductController;
 use Clean\Admin\Http\Controllers\BrandController;
 use Clean\Admin\Http\Controllers\CategoryController;
 use Clean\Admin\Http\Controllers\IngredientController;
+use Clean\Admin\Http\Controllers\ClientController;
 use Clean\Admin\Http\Controllers\DashboardController;
 
 Route::group(['middleware' => ['web']], function () {
@@ -92,6 +93,25 @@ Route::group(['middleware' => ['web']], function () {
             Route::post('/bulk-action', [IngredientController::class, 'bulkAction'])->name('bulk-action');
             Route::get('/export', [IngredientController::class, 'export'])->name('export');
             Route::get('/{cleanIngredient}/safety-info', [IngredientController::class, 'safetyInfo'])->name('safety-info');
+        });
+        
+        // Clients Management - Ruta de compatibilidad
+        Route::get('/clients', [ClientController::class, 'index'])->name('clients');
+        
+        // Clients Management - Rutas completas CRUD
+        Route::prefix('clients')->name('clients.')->group(function () {
+            Route::get('/', [ClientController::class, 'index'])->name('index');
+            Route::get('/create', [ClientController::class, 'create'])->name('create');
+            Route::post('/', [ClientController::class, 'store'])->name('store');
+            Route::get('/{cleanClient}', [ClientController::class, 'show'])->name('show');
+            Route::get('/{cleanClient}/edit', [ClientController::class, 'edit'])->name('edit');
+            Route::put('/{cleanClient}', [ClientController::class, 'update'])->name('update');
+            Route::delete('/{cleanClient}', [ClientController::class, 'destroy'])->name('destroy');
+            
+            // Operaciones adicionales
+            Route::post('/bulk-action', [ClientController::class, 'bulkAction'])->name('bulk-action');
+            Route::get('/export', [ClientController::class, 'export'])->name('export');
+            Route::get('/{cleanClient}/info', [ClientController::class, 'clientInfo'])->name('info');
         });
         
         // Safety Reports
