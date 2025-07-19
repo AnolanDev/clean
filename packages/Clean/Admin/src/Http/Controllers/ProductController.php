@@ -12,9 +12,12 @@ use Clean\Core\Models\CleanProduct;
 use Clean\Core\Models\CleanBrand;
 use Clean\Core\Models\CleanCategory;
 use Clean\Core\Models\CleanIngredient;
+use Clean\Admin\Traits\HasFilters;
+use Clean\Admin\Support\FilterConfig;
 
 class ProductController extends Controller
 {
+    use HasFilters;
     public function __construct(
         protected CleanProductService $productService
     ) {}
@@ -31,43 +34,23 @@ class ProductController extends Controller
             'product_type', 'sort_by', 'sort_order'
         ]);
 
-        // Construir query con filtros
-        $query = CleanProduct::with(['brand', 'category'])
-            ->when($filters['brand_id'] ?? null, fn($q, $brandId) => 
-                $q->where('clean_brand_id', $brandId))
-            ->when($filters['category_id'] ?? null, fn($q, $categoryId) => 
-                $q->where('clean_category_id', $categoryId))
-            ->when($filters['safety_level'] ?? null, fn($q, $safety) => 
-                $q->where('safety_classification', $safety))
-            ->when($filters['search'] ?? null, fn($q, $search) => 
-                $q->where(function($subQ) use ($search) {
-                    $subQ->where('name', 'like', "%{$search}%")
-                         ->orWhere('description', 'like', "%{$search}%")
-                         ->orWhere('benefits', 'like', "%{$search}%");
-                }))
-            ->when($filters['eco_friendly'] ?? null, fn($q) => 
-                $q->where('is_eco_friendly', true))
-            ->when($filters['antibacterial'] ?? null, fn($q) => 
-                $q->where('is_antibacterial', true))
-            ->when($filters['antiviral'] ?? null, fn($q) => 
-                $q->where('is_antiviral', true))
-            ->when($filters['biodegradable'] ?? null, fn($q) => 
-                $q->where('is_biodegradable', true))
-            ->when($filters['food_contact_safe'] ?? null, fn($q) => 
-                $q->where('food_contact_safe', true))
-            ->when($filters['no_residue'] ?? null, fn($q) => 
-                $q->where('no_residue', true))
-            ->when($filters['fabric_safe'] ?? null, fn($q) => 
-                $q->where('fabric_safe', true))
-            ->when($filters['product_type'] ?? null, fn($q, $type) => 
-                $q->where('product_type', $type));
+        // Configuración de filtros para productos
+        $filterConfig = array_merge(
+            FilterConfig::products(), 
+            FilterConfig::defaultSorting()
+        );
 
-        // Ordenamiento
-        $sortBy = $filters['sort_by'] ?? 'created_at';
-        $sortOrder = $filters['sort_order'] ?? 'desc';
-        $query->orderBy($sortBy, $sortOrder);
+        // Construir query con el nuevo sistema de filtros
+        $query = CleanProduct::with(['brand', 'category']);
+        
+        // Aplicar filtros usando el trait
+        $query = $this->applyFilters($query, $filters, $filterConfig);
+        
+        // Aplicar ordenamiento
+        $query = $this->applySorting($query, $filters, $filterConfig);
 
-        $products = $query->paginate(20)->withQueryString();
+        // Paginación con filtros
+        $products = $this->paginateWithFilters($query, 20);
 
         // Datos para filtros
         $brands = CleanBrand::orderBy('name')->get();

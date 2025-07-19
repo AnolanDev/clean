@@ -127,7 +127,7 @@
 
             <!-- Filtros y Búsqueda -->
             <div class="p-3">
-                <form method="GET" action="{{ route('admin.clean.brands.index') }}" class="space-y-3">
+                <form id="filters-form" method="GET" action="{{ route('admin.clean.brands.index') }}" class="space-y-3">
                     <!-- Búsqueda Principal -->
                     <div class="flex flex-col sm:flex-row gap-3">
                         <div class="flex-1">
@@ -137,17 +137,12 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                     </svg>
                                 </div>
-                                <input type="text" name="search" value="{{ $filters['search'] ?? '' }}" 
+                                <input type="text" name="search" id="search" value="{{ $filters['search'] ?? '' }}" 
                                        placeholder="Buscar marcas..." 
-                                       class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                       class="auto-filter block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500"
+                                       data-delay="500">
                             </div>
                         </div>
-                        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center justify-center">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                            </svg>
-                            <span class="hidden sm:inline">Buscar</span>
-                        </button>
                     </div>
 
                     <!-- Filtros Adicionales - Solo visible en modo expandido -->
@@ -155,7 +150,7 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                             <!-- País -->
                             <div>
-                                <select name="country" class="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <select name="country" class="auto-filter w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500">
                                     <option value="">Todos los países</option>
                                     @foreach($countries as $country)
                                         <option value="{{ $country }}" {{ ($filters['country'] ?? '') === $country ? 'selected' : '' }}>{{ $country }}</option>
@@ -165,24 +160,25 @@
 
                             <!-- Ecológica -->
                             <div>
-                                <select name="eco_friendly" class="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <select name="eco_friendly" class="auto-filter w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500">
                                     <option value="">Todas las marcas</option>
-                                    <option value="1" {{ isset($filters['eco_friendly']) && $filters['eco_friendly'] == '1' ? 'selected' : '' }}>Solo ecológicas</option>
+                                    <option value="1" {{ ($filters['eco_friendly'] ?? '') === '1' ? 'selected' : '' }}>Solo ecológicas</option>
+                                    <option value="0" {{ ($filters['eco_friendly'] ?? '') === '0' ? 'selected' : '' }}>Solo no ecológicas</option>
                                 </select>
                             </div>
 
                             <!-- Estado -->
                             <div>
-                                <select name="status" class="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <select name="status" class="auto-filter w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500">
                                     <option value="">Todos los estados</option>
-                                    <option value="1" {{ isset($filters['status']) && $filters['status'] == '1' ? 'selected' : '' }}>Activas</option>
-                                    <option value="0" {{ isset($filters['status']) && $filters['status'] == '0' ? 'selected' : '' }}>Inactivas</option>
+                                    <option value="1" {{ ($filters['status'] ?? '') === '1' ? 'selected' : '' }}>Activas</option>
+                                    <option value="0" {{ ($filters['status'] ?? '') === '0' ? 'selected' : '' }}>Inactivas</option>
                                 </select>
                             </div>
 
                             <!-- Ordenamiento -->
                             <div>
-                                <select name="sort_by" class="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <select name="sort_by" class="auto-filter w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500">
                                     <option value="sort_order" {{ ($filters['sort_by'] ?? 'sort_order') === 'sort_order' ? 'selected' : '' }}>Orden predeterminado</option>
                                     <option value="name" {{ ($filters['sort_by'] ?? '') === 'name' ? 'selected' : '' }}>Nombre</option>
                                     <option value="country" {{ ($filters['sort_by'] ?? '') === 'country' ? 'selected' : '' }}>País</option>
@@ -432,6 +428,10 @@
 
 @push('scripts')
 <script>
+// Configuración para filtros automáticos
+let filterTimeout;
+const AUTO_FILTER_DELAY = 500; // 500ms de debounce para búsqueda
+
 // Toggle filtros avanzados
 function toggleAdvancedFilters() {
     const filters = document.getElementById('advanced-filters');
@@ -449,8 +449,83 @@ function toggleAdvancedFilters() {
     }
 }
 
+function initAutoFilters() {
+    const form = document.getElementById('filters-form');
+    const autoFilterElements = document.querySelectorAll('.auto-filter');
+    
+    autoFilterElements.forEach(element => {
+        if (element.type === 'text' || element.type === 'search') {
+            // Para campos de texto, usar debounce
+            element.addEventListener('input', function() {
+                clearTimeout(filterTimeout);
+                const delay = parseInt(element.getAttribute('data-delay')) || AUTO_FILTER_DELAY;
+                
+                filterTimeout = setTimeout(() => {
+                    submitFilters();
+                }, delay);
+            });
+        } else {
+            // Para selects, aplicar filtro inmediatamente
+            element.addEventListener('change', function() {
+                clearTimeout(filterTimeout);
+                submitFilters();
+            });
+        }
+    });
+}
+
+function submitFilters() {
+    const form = document.getElementById('filters-form');
+    if (form) {
+        // Guardar información del elemento activo
+        const activeElement = document.activeElement;
+        if (activeElement && (activeElement.type === 'text' || activeElement.type === 'search')) {
+            const elementId = activeElement.id || activeElement.name;
+            const cursorPosition = activeElement.selectionStart;
+            
+            // Guardar en sessionStorage para restaurar después de la recarga
+            sessionStorage.setItem('focusedElement', elementId);
+            sessionStorage.setItem('cursorPosition', cursorPosition);
+        }
+        
+        // Mostrar indicador de carga
+        showLoadingIndicator();
+        form.submit();
+    }
+}
+
+// Restaurar foco después de la recarga de página
+function restoreFocus() {
+    const focusedElementId = sessionStorage.getItem('focusedElement');
+    const cursorPosition = sessionStorage.getItem('cursorPosition');
+    
+    if (focusedElementId) {
+        const element = document.getElementById(focusedElementId) || document.querySelector(`[name="${focusedElementId}"]`);
+        if (element) {
+            // Pequeño delay para asegurar que el DOM esté completamente cargado
+            setTimeout(() => {
+                element.focus();
+                if (cursorPosition && (element.type === 'text' || element.type === 'search')) {
+                    element.setSelectionRange(cursorPosition, cursorPosition);
+                }
+            }, 100);
+        }
+        
+        // Limpiar sessionStorage
+        sessionStorage.removeItem('focusedElement');
+        sessionStorage.removeItem('cursorPosition');
+    }
+}
+
+function showLoadingIndicator() {
+    // Ya no necesitamos mostrar indicador de carga ya que los filtros son automáticos
+    // Esta función se mantiene para compatibilidad pero no hace nada
+}
+
 // Gestión de selección múltiple
 document.addEventListener('DOMContentLoaded', function() {
+    initAutoFilters();
+    restoreFocus();
     const selectAll = document.getElementById('selectAll');
     const checkboxes = document.querySelectorAll('.brand-checkbox');
     const selectedCount = document.getElementById('selectedCount');

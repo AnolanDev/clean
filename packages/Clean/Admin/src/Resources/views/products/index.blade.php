@@ -175,51 +175,245 @@
                 </div>
             </div>
             
-            <!-- Filtros -->
-            <div class="p-4">
-                <div class="flex flex-wrap items-center gap-3">
-                    <div class="flex items-center space-x-2">
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"></path>
-                        </svg>
-                        <span class="text-sm font-medium text-gray-700">Filtros:</span>
-                    </div>
-                    
-                    <select id="brandFilter" class="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">Todas las marcas</option>
-                        @foreach($brands as $brand)
-                            <option value="{{ $brand->id }}">{{ $brand->name }}</option>
-                        @endforeach
-                    </select>
-                    
-                    <select id="categoryFilter" class="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">Todas las categorías</option>
-                        @foreach($categories as $category)
-                            <option value="{{ $category->id }}">{{ $category->name }}</option>
-                        @endforeach
-                    </select>
-                    
-                    <select id="characteristicFilter" class="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">Características</option>
-                        <option value="eco_friendly">🌿 Ecológico</option>
-                        <option value="antibacterial">🦠 Antibacterial</option>
-                        <option value="antiviral">🛡️ Antiviral</option>
-                        <option value="biodegradable">♻️ Biodegradable</option>
-                        <option value="food_safe">🍎 Seguro alimentos</option>
-                        <option value="no_residue">✨ Sin residuos</option>
-                    </select>
-                    
-                    <div class="flex-1 min-w-[200px]">
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                </svg>
-                            </div>
-                            <input type="text" id="searchFilter" placeholder="Buscar productos..." class="block w-full pl-10 pr-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+            <!-- Filtros y Acciones -->
+            <div class="px-4 py-4 border-b border-gray-200">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+                    <!-- Título de la sección -->
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z" />
+                            </svg>
                         </div>
+                        <h3 class="text-lg font-medium text-gray-900">Filtros de Búsqueda</h3>
+                    </div>
+
+                    <!-- Acciones rápidas -->
+                    <div class="flex items-center space-x-2">
+                        <button onclick="toggleAdvancedFilters()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+                            </svg>
+                            Filtros Avanzados
+                        </button>
                     </div>
                 </div>
+            </div>
+
+            <!-- Indicadores de filtros aplicados -->
+            @php
+                $hasFilters = collect($filters)->filter(fn($value) => !empty($value))->isNotEmpty();
+            @endphp
+            
+            @if($hasFilters)
+                <div class="px-4 py-3 bg-emerald-50 border-b border-emerald-200">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center">
+                                <svg class="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <span class="text-sm font-medium text-emerald-800">
+                                {{ collect($filters)->filter(fn($value) => !empty($value))->count() }} filtro(s) aplicado(s)
+                            </span>
+                            @foreach($filters as $key => $value)
+                                @if(!empty($value))
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                                        @if($key === 'search')
+                                            🔍 {{ $value }}
+                                        @elseif($key === 'brand_id')
+                                            🏷️ {{ $brands->find($value)->name ?? 'Marca' }}
+                                        @elseif($key === 'category_id')
+                                            📁 {{ $categories->find($value)->name ?? 'Categoría' }}
+                                        @elseif($key === 'is_eco_friendly')
+                                            🌿 {{ $value == '1' ? 'Ecológico' : 'No ecológico' }}
+                                        @elseif($key === 'is_antibacterial')
+                                            🦠 {{ $value == '1' ? 'Antibacterial' : 'No antibacterial' }}
+                                        @else
+                                            {{ $key }}: {{ $value }}
+                                        @endif
+                                    </span>
+                                @endif
+                            @endforeach
+                        </div>
+                        <a href="{{ route('admin.clean.products.index') }}" 
+                           class="text-sm font-medium text-emerald-600 hover:text-emerald-500 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Limpiar filtros
+                        </a>
+                    </div>
+                </div>
+            @endif
+            
+            <!-- Filtros principales -->
+            <div class="px-4 py-4">
+                
+                <form id="filters-form" method="GET" action="{{ route('admin.clean.products.index') }}" class="space-y-4">
+                    <!-- Búsqueda principal -->
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <div class="flex-1">
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
+                                </div>
+                                <input type="text" 
+                                       name="search" 
+                                       id="search"
+                                       value="{{ $filters['search'] ?? '' }}"
+                                       placeholder="Buscar por nombre, descripción, beneficios..."
+                                       class="auto-filter block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm"
+                                       data-delay="600">
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <select name="is_eco_friendly" 
+                                    class="auto-filter px-4 py-3 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm">
+                                <option value="">Todos los productos</option>
+                                <option value="1" {{ ($filters['is_eco_friendly'] ?? '') === '1' ? 'selected' : '' }}>🌿 Ecológicos</option>
+                                <option value="0" {{ ($filters['is_eco_friendly'] ?? '') === '0' ? 'selected' : '' }}>⚠️ No ecológicos</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Filtros avanzados (colapsables) -->
+                    <div id="advanced-filters" class="hidden">
+                        <div class="bg-gray-50 rounded-lg p-4 space-y-4">
+                            <div class="flex items-center space-x-2 mb-3">
+                                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+                                </svg>
+                                <h4 class="text-sm font-medium text-gray-700">Filtros Avanzados</h4>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
+                                <!-- Marca -->
+                                <div>
+                                    <label for="brand_id" class="block text-xs font-medium text-gray-600 mb-1">Marca</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"></path>
+                                            </svg>
+                                        </div>
+                                        <select name="brand_id" id="brand_id" 
+                                                class="auto-filter w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm">
+                                            <option value="">Todas las marcas</option>
+                                            @foreach($brands as $brand)
+                                                <option value="{{ $brand->id }}" {{ ($filters['brand_id'] ?? '') == $brand->id ? 'selected' : '' }}>
+                                                    {{ $brand->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Categoría -->
+                                <div>
+                                    <label for="category_id" class="block text-xs font-medium text-gray-600 mb-1">Categoría</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                            </svg>
+                                        </div>
+                                        <select name="category_id" id="category_id" 
+                                                class="auto-filter w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm">
+                                            <option value="">Todas las categorías</option>
+                                            @foreach($categories as $category)
+                                                <option value="{{ $category->id }}" {{ ($filters['category_id'] ?? '') == $category->id ? 'selected' : '' }}>
+                                                    {{ $category->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Nivel de Seguridad -->
+                                <div>
+                                    <label for="safety_level" class="block text-xs font-medium text-gray-600 mb-1">Nivel de Seguridad</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                            </svg>
+                                        </div>
+                                        <select name="safety_level" id="safety_level" 
+                                                class="auto-filter w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm">
+                                            <option value="">Todos los niveles</option>
+                                            <option value="non_hazardous" {{ ($filters['safety_level'] ?? '') === 'non_hazardous' ? 'selected' : '' }}>🟢 No peligroso</option>
+                                            <option value="irritant" {{ ($filters['safety_level'] ?? '') === 'irritant' ? 'selected' : '' }}>🟡 Irritante</option>
+                                            <option value="corrosive" {{ ($filters['safety_level'] ?? '') === 'corrosive' ? 'selected' : '' }}>🟠 Corrosivo</option>
+                                            <option value="toxic" {{ ($filters['safety_level'] ?? '') === 'toxic' ? 'selected' : '' }}>🔴 Tóxico</option>
+                                            <option value="flammable" {{ ($filters['safety_level'] ?? '') === 'flammable' ? 'selected' : '' }}>🔥 Inflamable</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Tipo de Producto -->
+                                <div>
+                                    <label for="product_type" class="block text-xs font-medium text-gray-600 mb-1">Tipo de Producto</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                                            </svg>
+                                        </div>
+                                        <select name="product_type" id="product_type" 
+                                                class="auto-filter w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm">
+                                            <option value="">Todos los tipos</option>
+                                            <option value="liquid" {{ ($filters['product_type'] ?? '') === 'liquid' ? 'selected' : '' }}>💧 Líquido</option>
+                                            <option value="powder" {{ ($filters['product_type'] ?? '') === 'powder' ? 'selected' : '' }}>⚪ Polvo</option>
+                                            <option value="gel" {{ ($filters['product_type'] ?? '') === 'gel' ? 'selected' : '' }}>🟦 Gel</option>
+                                            <option value="spray" {{ ($filters['product_type'] ?? '') === 'spray' ? 'selected' : '' }}>🔫 Spray</option>
+                                            <option value="foam" {{ ($filters['product_type'] ?? '') === 'foam' ? 'selected' : '' }}>🫧 Espuma</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Antibacterial -->
+                                <div>
+                                    <label for="is_antibacterial" class="block text-xs font-medium text-gray-600 mb-1">Antibacterial</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                        </div>
+                                        <select name="is_antibacterial" id="is_antibacterial" 
+                                                class="auto-filter w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm">
+                                            <option value="">Todos</option>
+                                            <option value="1" {{ ($filters['is_antibacterial'] ?? '') === '1' ? 'selected' : '' }}>🦠 Antibacterial</option>
+                                            <option value="0" {{ ($filters['is_antibacterial'] ?? '') === '0' ? 'selected' : '' }}>❌ No antibacterial</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Ordenar por -->
+                                <div>
+                                    <label for="sort_by" class="block text-xs font-medium text-gray-600 mb-1">Ordenar por</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
+                                            </svg>
+                                        </div>
+                                        <select name="sort_by" id="sort_by" 
+                                                class="auto-filter w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm">
+                                            <option value="created_at" {{ ($filters['sort_by'] ?? 'created_at') === 'created_at' ? 'selected' : '' }}>📅 Más recientes</option>
+                                            <option value="name" {{ ($filters['sort_by'] ?? '') === 'name' ? 'selected' : '' }}>🔤 Nombre</option>
+                                            <option value="updated_at" {{ ($filters['sort_by'] ?? '') === 'updated_at' ? 'selected' : '' }}>🔄 Actualizados</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -405,6 +599,7 @@
     </div>
 </div>
 
+@push('scripts')
 <script>
 function importCatalog() {
     document.getElementById('importModal').classList.remove('hidden');
@@ -514,142 +709,42 @@ function deleteProduct(id) {
     }
 }
 
-// Filtros en tiempo real mejorados
-document.addEventListener('DOMContentLoaded', function() {
-    const brandFilter = document.getElementById('brandFilter');
-    const categoryFilter = document.getElementById('categoryFilter');
-    const characteristicFilter = document.getElementById('characteristicFilter');
-    const searchFilter = document.getElementById('searchFilter');
-    const productsTable = document.getElementById('productsTable');
-    const tableRows = productsTable.querySelectorAll('tbody tr');
-    
-    function applyFilters() {
-        const filters = {
-            brand: brandFilter.value.toLowerCase(),
-            category: categoryFilter.value.toLowerCase(),
-            characteristic: characteristicFilter.value.toLowerCase(),
-            search: searchFilter.value.toLowerCase()
-        };
-        
-        let visibleCount = 0;
-        
-        tableRows.forEach(row => {
-            if (row.querySelector('td[colspan]')) return; // Skip empty state row
-            
-            const productName = row.querySelector('td:first-child .text-sm').textContent.toLowerCase();
-            const brandText = row.querySelector('td:nth-child(2) .bg-blue-100').textContent.toLowerCase();
-            const categoryText = row.querySelector('td:nth-child(2) .bg-gray-100').textContent.toLowerCase();
-            const characteristics = row.querySelector('td:nth-child(4)').textContent.toLowerCase();
-            
-            let visible = true;
-            
-            // Filtro de búsqueda
-            if (filters.search && !productName.includes(filters.search)) {
-                visible = false;
-            }
-            
-            // Filtro de marca
-            if (filters.brand && !brandText.includes(filters.brand)) {
-                visible = false;
-            }
-            
-            // Filtro de categoría
-            if (filters.category && !categoryText.includes(filters.category)) {
-                visible = false;
-            }
-            
-            // Filtro de características
-            if (filters.characteristic) {
-                const charMap = {
-                    'eco_friendly': '🌿',
-                    'antibacterial': '🦠',
-                    'antiviral': '🛡️',
-                    'biodegradable': '♻️',
-                    'food_safe': '🍎',
-                    'no_residue': '✨'
-                };
-                
-                if (!characteristics.includes(charMap[filters.characteristic] || filters.characteristic)) {
-                    visible = false;
-                }
-            }
-            
-            row.style.display = visible ? '' : 'none';
-            if (visible) visibleCount++;
-        });
-        
-        // Actualizar contador
-        updateProductCount(visibleCount);
-    }
-    
-    function updateProductCount(count) {
-        const footer = document.querySelector('.px-6.py-4 .text-center');
-        if (footer) {
-            const total = tableRows.length - 1; // -1 para excluir la fila de estado vacío
-            footer.textContent = `Mostrando ${count} de ${total} productos`;
-        }
-    }
-    
-    // Debounce para el campo de búsqueda
-    let searchTimeout;
-    function debouncedSearch() {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(applyFilters, 300);
-    }
-    
-    brandFilter.addEventListener('change', applyFilters);
-    categoryFilter.addEventListener('change', applyFilters);
-    characteristicFilter.addEventListener('change', applyFilters);
-    searchFilter.addEventListener('input', debouncedSearch);
-    
-    // Limpiar filtros
-    function clearFilters() {
-        brandFilter.value = '';
-        categoryFilter.value = '';
-        characteristicFilter.value = '';
-        searchFilter.value = '';
-        applyFilters();
-    }
-    
-    // Agregar botón de limpiar filtros si no existe
-    const filtersContainer = document.querySelector('.flex.flex-wrap.items-center.gap-3');
-    if (filtersContainer && !document.getElementById('clearFilters')) {
-        const clearButton = document.createElement('button');
-        clearButton.id = 'clearFilters';
-        clearButton.className = 'text-sm text-gray-500 hover:text-gray-700 underline';
-        clearButton.textContent = 'Limpiar filtros';
-        clearButton.addEventListener('click', clearFilters);
-        filtersContainer.appendChild(clearButton);
-    }
+// Configuración para filtros automáticos
+let filterTimeout;
+const AUTO_FILTER_DELAY = 500; // 500ms de debounce para búsqueda
 
-    // Funcionalidad de selección masiva
+// Funcionalidad de selección masiva y acciones
+document.addEventListener('DOMContentLoaded', function() {
+    initAutoFilters();
+    restoreFocus();
+    
     const selectAllCheckbox = document.getElementById('selectAll');
     const productCheckboxes = document.querySelectorAll('.product-checkbox');
     
-    selectAllCheckbox.addEventListener('change', function() {
-        productCheckboxes.forEach(checkbox => {
-            if (checkbox.closest('tr').style.display !== 'none') {
+    // Funcionalidad de selección masiva
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', function() {
+            productCheckboxes.forEach(checkbox => {
                 checkbox.checked = this.checked;
-            }
+            });
+            updateSelectionStatus();
         });
-        updateSelectionStatus();
-    });
+    }
     
     productCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', updateSelectionStatus);
     });
     
     function updateSelectionStatus() {
-        const visibleCheckboxes = Array.from(productCheckboxes).filter(cb => 
-            cb.closest('tr').style.display !== 'none'
-        );
-        const checkedCount = visibleCheckboxes.filter(cb => cb.checked).length;
+        const checkedCheckboxes = Array.from(productCheckboxes).filter(cb => cb.checked);
         
-        selectAllCheckbox.checked = checkedCount > 0 && checkedCount === visibleCheckboxes.length;
-        selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < visibleCheckboxes.length;
+        if (selectAllCheckbox) {
+            selectAllCheckbox.checked = productCheckboxes.length > 0 && checkedCheckboxes.length === productCheckboxes.length;
+            selectAllCheckbox.indeterminate = checkedCheckboxes.length > 0 && checkedCheckboxes.length < productCheckboxes.length;
+        }
         
-        // Mostrar/ocultar acciones masivas
-        updateBulkActions(checkedCount);
+        // Actualizar contador de selección
+        updateBulkActions(checkedCheckboxes.length);
     }
     
     function updateBulkActions(selectedCount) {
@@ -665,5 +760,113 @@ document.addEventListener('DOMContentLoaded', function() {
             .map(cb => cb.value);
     }
 });
+
+function initAutoFilters() {
+    const form = document.getElementById('filters-form');
+    const autoFilterElements = document.querySelectorAll('.auto-filter');
+    
+    autoFilterElements.forEach(element => {
+        if (element.type === 'text' || element.type === 'search') {
+            // Para campos de texto, usar debounce
+            element.addEventListener('input', function() {
+                clearTimeout(filterTimeout);
+                const delay = parseInt(element.getAttribute('data-delay')) || AUTO_FILTER_DELAY;
+                
+                filterTimeout = setTimeout(() => {
+                    submitFilters();
+                }, delay);
+            });
+        } else if (element.type === 'checkbox') {
+            // Para checkboxes, aplicar filtro inmediatamente
+            element.addEventListener('change', function() {
+                clearTimeout(filterTimeout);
+                submitFilters();
+            });
+        } else {
+            // Para selects, aplicar filtro inmediatamente
+            element.addEventListener('change', function() {
+                clearTimeout(filterTimeout);
+                submitFilters();
+            });
+        }
+    });
+}
+
+function submitFilters() {
+    const form = document.getElementById('filters-form');
+    if (form) {
+        // Guardar información del elemento activo
+        const activeElement = document.activeElement;
+        if (activeElement && (activeElement.type === 'text' || activeElement.type === 'search')) {
+            const elementId = activeElement.id || activeElement.name;
+            const cursorPosition = activeElement.selectionStart;
+            
+            // Guardar en sessionStorage para restaurar después de la recarga
+            sessionStorage.setItem('focusedElement', elementId);
+            sessionStorage.setItem('cursorPosition', cursorPosition);
+        }
+        
+        // Mostrar indicador de carga
+        showLoadingIndicator();
+        form.submit();
+    }
+}
+
+// Restaurar foco después de la recarga de página
+function restoreFocus() {
+    const focusedElementId = sessionStorage.getItem('focusedElement');
+    const cursorPosition = sessionStorage.getItem('cursorPosition');
+    
+    if (focusedElementId) {
+        const element = document.getElementById(focusedElementId) || document.querySelector(`[name="${focusedElementId}"]`);
+        if (element) {
+            // Pequeño delay para asegurar que el DOM esté completamente cargado
+            setTimeout(() => {
+                element.focus();
+                if (cursorPosition && (element.type === 'text' || element.type === 'search')) {
+                    element.setSelectionRange(cursorPosition, cursorPosition);
+                }
+            }, 100);
+        }
+        
+        // Limpiar sessionStorage
+        sessionStorage.removeItem('focusedElement');
+        sessionStorage.removeItem('cursorPosition');
+    }
+}
+
+function showLoadingIndicator() {
+    // Ya no necesitamos mostrar indicador de carga ya que los filtros son automáticos
+    // Esta función se mantiene para compatibilidad pero no hace nada
+}
+
+// Toggle para filtros avanzados
+function toggleAdvancedFilters() {
+    const advancedFilters = document.getElementById('advanced-filters');
+    const button = event.target;
+    
+    if (advancedFilters.classList.contains('hidden')) {
+        advancedFilters.classList.remove('hidden');
+        button.innerHTML = `
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+            </svg>
+            Ocultar Filtros
+        `;
+        button.classList.remove('bg-gray-100', 'hover:bg-gray-200', 'text-gray-700');
+        button.classList.add('bg-emerald-100', 'hover:bg-emerald-200', 'text-emerald-700');
+    } else {
+        advancedFilters.classList.add('hidden');
+        button.innerHTML = `
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+            </svg>
+            Filtros Avanzados
+        `;
+        button.classList.remove('bg-emerald-100', 'hover:bg-emerald-200', 'text-emerald-700');
+        button.classList.add('bg-gray-100', 'hover:bg-gray-200', 'text-gray-700');
+    }
+}
 </script>
+@endpush
 @endsection

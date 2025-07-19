@@ -69,11 +69,12 @@
 
                 <!-- Buscador móvil -->
                 <div class="lg:hidden">
-                    <form method="GET" action="{{ route('admin.clean.categories.index') }}">
+                    <form id="filters-form-mobile" method="GET" action="{{ route('admin.clean.categories.index') }}">
                         <div class="relative">
-                            <input type="text" name="search" value="{{ $filters['search'] ?? '' }}" 
+                            <input type="text" name="search" id="search-mobile" value="{{ $filters['search'] ?? '' }}" 
                                    placeholder="Buscar categorías..." 
-                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                                   class="auto-filter w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
+                                   data-delay="500">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
                                 <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -87,15 +88,37 @@
 
         <!-- Filtros avanzados desktop -->
         <div class="hidden lg:block px-4 py-4 bg-gray-50 border-b border-gray-200">
-            <form method="GET" action="{{ route('admin.clean.categories.index') }}" class="grid grid-cols-1 md:grid-cols-6 gap-4">
+            @php
+                $hasFilters = collect($filters)->filter(fn($value) => !empty($value))->isNotEmpty();
+            @endphp
+            
+            @if($hasFilters)
+                <div class="mb-4 flex items-center justify-between rounded-md bg-blue-50 p-3">
+                    <div class="flex items-center">
+                        <svg class="h-5 w-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z" />
+                        </svg>
+                        <span class="ml-2 text-sm font-medium text-blue-900">
+                            Filtros aplicados: {{ collect($filters)->filter(fn($value) => !empty($value))->count() }}
+                        </span>
+                    </div>
+                    <a href="{{ route('admin.clean.categories.index') }}" 
+                       class="text-sm font-medium text-blue-600 hover:text-blue-500">
+                        Limpiar filtros
+                    </a>
+                </div>
+            @endif
+            
+            <form id="filters-form" method="GET" action="{{ route('admin.clean.categories.index') }}" class="grid grid-cols-1 md:grid-cols-7 gap-4">
                 <div>
-                    <input type="text" name="search" value="{{ $filters['search'] ?? '' }}" 
+                    <input type="text" name="search" id="search" value="{{ $filters['search'] ?? '' }}" 
                            placeholder="Buscar..." 
-                           class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                           class="auto-filter w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500"
+                           data-delay="500">
                 </div>
                 
                 <div>
-                    <select name="usage_area" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                    <select name="usage_area" class="auto-filter w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500">
                         <option value="">Área de uso</option>
                         @foreach($usageAreas as $area)
                             <option value="{{ $area }}" {{ ($filters['usage_area'] ?? '') === $area ? 'selected' : '' }}>
@@ -106,7 +129,7 @@
                 </div>
 
                 <div>
-                    <select name="surface_type" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                    <select name="surface_type" class="auto-filter w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500">
                         <option value="">Tipo superficie</option>
                         @foreach($surfaceTypes as $type)
                             <option value="{{ $type }}" {{ ($filters['surface_type'] ?? '') === $type ? 'selected' : '' }}>
@@ -117,7 +140,7 @@
                 </div>
 
                 <div>
-                    <select name="parent_id" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                    <select name="parent_id" class="auto-filter w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500">
                         <option value="">Categoría padre</option>
                         <option value="root" {{ ($filters['parent_id'] ?? '') === 'root' ? 'selected' : '' }}>
                             Solo principales
@@ -131,21 +154,21 @@
                 </div>
 
                 <div>
-                    <select name="status" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                    <select name="status" class="auto-filter w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500">
                         <option value="">Estado</option>
                         <option value="1" {{ ($filters['status'] ?? '') === '1' ? 'selected' : '' }}>Activa</option>
                         <option value="0" {{ ($filters['status'] ?? '') === '0' ? 'selected' : '' }}>Inactiva</option>
                     </select>
                 </div>
 
-                <div class="flex gap-2">
-                    <button type="submit" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200">
-                        Filtrar
-                    </button>
-                    <a href="{{ route('admin.clean.categories.index') }}" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 text-center">
-                        Limpiar
-                    </a>
+                <div>
+                    <select name="professional_use" class="auto-filter w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                        <option value="">Uso profesional</option>
+                        <option value="1" {{ ($filters['professional_use'] ?? '') === '1' ? 'selected' : '' }}>Sí</option>
+                        <option value="0" {{ ($filters['professional_use'] ?? '') === '0' ? 'selected' : '' }}>No</option>
+                    </select>
                 </div>
+
             </form>
         </div>
 
@@ -453,21 +476,113 @@
 
 @push('scripts')
 <script>
-    // Toggle bulk actions
-    function toggleBulkActions() {
-        const bulkActions = document.getElementById('bulk-actions');
-        bulkActions.classList.toggle('hidden');
-        updateSelectedCount();
+    // Configuración para filtros automáticos
+    let filterTimeout;
+    const AUTO_FILTER_DELAY = 500; // 500ms de debounce para búsqueda
+    
+    // Inicializar filtros automáticos y funciones de bulk
+    document.addEventListener('DOMContentLoaded', function() {
+        initAutoFilters();
+        initBulkActions();
+        restoreFocus();
+    });
+    
+    // Restaurar foco después de la recarga de página
+    function restoreFocus() {
+        const focusedElementId = sessionStorage.getItem('focusedElement');
+        const cursorPosition = sessionStorage.getItem('cursorPosition');
+        
+        if (focusedElementId) {
+            const element = document.getElementById(focusedElementId) || document.querySelector(`[name="${focusedElementId}"]`);
+            if (element) {
+                // Pequeño delay para asegurar que el DOM esté completamente cargado
+                setTimeout(() => {
+                    element.focus();
+                    if (cursorPosition && (element.type === 'text' || element.type === 'search')) {
+                        element.setSelectionRange(cursorPosition, cursorPosition);
+                    }
+                }, 100);
+            }
+            
+            // Limpiar sessionStorage
+            sessionStorage.removeItem('focusedElement');
+            sessionStorage.removeItem('cursorPosition');
+        }
+    }
+    
+    function initAutoFilters() {
+        const form = document.getElementById('filters-form');
+        const autoFilterElements = document.querySelectorAll('.auto-filter');
+        
+        autoFilterElements.forEach(element => {
+            if (element.type === 'text' || element.type === 'search') {
+                // Para campos de texto, usar debounce
+                element.addEventListener('input', function() {
+                    clearTimeout(filterTimeout);
+                    const delay = parseInt(element.getAttribute('data-delay')) || AUTO_FILTER_DELAY;
+                    
+                    filterTimeout = setTimeout(() => {
+                        submitFilters();
+                    }, delay);
+                });
+            } else {
+                // Para selects, aplicar filtro inmediatamente
+                element.addEventListener('change', function() {
+                    clearTimeout(filterTimeout);
+                    submitFilters();
+                });
+            }
+        });
+    }
+    
+    function submitFilters() {
+        // Determinar qué formulario usar (desktop o móvil)
+        const form = document.getElementById('filters-form') || document.getElementById('filters-form-mobile');
+        if (form) {
+            // Guardar información del elemento activo
+            const activeElement = document.activeElement;
+            if (activeElement && (activeElement.type === 'text' || activeElement.type === 'search')) {
+                const elementId = activeElement.id || activeElement.name;
+                const cursorPosition = activeElement.selectionStart;
+                
+                // Guardar en sessionStorage para restaurar después de la recarga
+                sessionStorage.setItem('focusedElement', elementId);
+                sessionStorage.setItem('cursorPosition', cursorPosition);
+            }
+            
+            // Mostrar indicador de carga
+            showLoadingIndicator();
+            form.submit();
+        }
+    }
+    
+    function showLoadingIndicator() {
+        // Ya no necesitamos mostrar indicador de carga ya que los filtros son automáticos
+        // Esta función se mantiene para compatibilidad pero no hace nada
     }
 
-    // Select all checkboxes
-    document.getElementById('select-all')?.addEventListener('change', function() {
-        const checkboxes = document.querySelectorAll('.category-checkbox');
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = this.checked;
+    function initBulkActions() {
+        // Toggle bulk actions
+        window.toggleBulkActions = function() {
+            const bulkActions = document.getElementById('bulk-actions');
+            bulkActions.classList.toggle('hidden');
+            updateSelectedCount();
+        };
+
+        // Select all checkboxes
+        document.getElementById('select-all')?.addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.category-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+            updateSelectedCount();
         });
-        updateSelectedCount();
-    });
+
+        // Add event listeners to checkboxes
+        document.querySelectorAll('.category-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', updateSelectedCount);
+        });
+    }
 
     // Update selected count
     function updateSelectedCount() {
@@ -481,11 +596,6 @@
             document.getElementById('bulk-actions').classList.add('hidden');
         }
     }
-
-    // Add event listeners to checkboxes
-    document.querySelectorAll('.category-checkbox').forEach(checkbox => {
-        checkbox.addEventListener('change', updateSelectedCount);
-    });
 
     // Bulk actions
     function bulkAction(action) {

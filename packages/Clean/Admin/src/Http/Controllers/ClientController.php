@@ -7,9 +7,12 @@ use App\Http\Controllers\Controller;
 use Clean\Core\Models\CleanClient;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Clean\Admin\Traits\HasFilters;
+use Clean\Admin\Support\FilterConfig;
 
 class ClientController extends Controller
 {
+    use HasFilters;
     /**
      * Display a listing of clients.
      */
@@ -20,22 +23,12 @@ class ClientController extends Controller
             'is_active', 'sort_by', 'sort_order'
         ]);
 
-        $query = CleanClient::query()
-            ->when($filters['search'] ?? null, fn($q, $search) => 
-                $q->where(function($subQ) use ($search) {
-                    $subQ->where('company_name', 'like', "%{$search}%")
-                         ->orWhere('contact_name', 'like', "%{$search}%")
-                         ->orWhere('contact_email', 'like', "%{$search}%")
-                         ->orWhere('tax_id', 'like', "%{$search}%");
-                }))
-            ->when($filters['industry_type'] ?? null, fn($q, $industry) => 
-                $q->where('industry_type', $industry))
-            ->when($filters['client_type'] ?? null, fn($q, $type) => 
-                $q->where('client_type', $type))
-            ->when($filters['risk_level'] ?? null, fn($q, $risk) => 
-                $q->where('risk_level', $risk))
-            ->when(isset($filters['is_active']), fn($q) => 
-                $q->where('is_active', $filters['is_active']));
+        // Construir query base
+        $query = CleanClient::query();
+        
+        // Aplicar filtros usando el trait HasFilters
+        $filterConfig = FilterConfig::clients();
+        $query = $this->applyFilters($query, $filters, $filterConfig);
 
         $sortBy = $filters['sort_by'] ?? 'company_name';
         $sortOrder = $filters['sort_order'] ?? 'asc';

@@ -6,9 +6,12 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Clean\Core\Models\CleanIngredient;
+use Clean\Admin\Traits\HasFilters;
+use Clean\Admin\Support\FilterConfig;
 
 class IngredientController extends Controller
 {
+    use HasFilters;
     /**
      * Display a listing of ingredients.
      */
@@ -18,30 +21,23 @@ class IngredientController extends Controller
             'search', 'type', 'safety_level', 'is_natural', 'is_biodegradable', 'sort_by', 'sort_order'
         ]);
 
-        // Construir query con filtros
-        $query = CleanIngredient::withCount('products')
-            ->when($filters['search'] ?? null, fn($q, $search) => 
-                $q->where(function($subQ) use ($search) {
-                    $subQ->where('name', 'like', "%{$search}%")
-                         ->orWhere('chemical_name', 'like', "%{$search}%")
-                         ->orWhere('cas_number', 'like', "%{$search}%")
-                         ->orWhere('description', 'like', "%{$search}%");
-                }))
-            ->when($filters['type'] ?? null, fn($q, $type) => 
-                $q->where('type', $type))
-            ->when($filters['safety_level'] ?? null, fn($q, $level) => 
-                $q->where('safety_level', $level))
-            ->when(isset($filters['is_natural']), fn($q) => 
-                $q->where('is_natural', true))
-            ->when(isset($filters['is_biodegradable']), fn($q) => 
-                $q->where('is_biodegradable', true));
+        // Configuración de filtros para ingredientes
+        $filterConfig = array_merge(
+            FilterConfig::ingredients(), 
+            FilterConfig::defaultSorting()
+        );
 
-        // Ordenamiento
-        $sortBy = $filters['sort_by'] ?? 'name';
-        $sortOrder = $filters['sort_order'] ?? 'asc';
-        $query->orderBy($sortBy, $sortOrder);
+        // Construir query con el nuevo sistema de filtros
+        $query = CleanIngredient::withCount('products');
+        
+        // Aplicar filtros usando el trait
+        $query = $this->applyFilters($query, $filters, $filterConfig);
+        
+        // Aplicar ordenamiento
+        $query = $this->applySorting($query, $filters, $filterConfig);
 
-        $ingredients = $query->paginate(20)->withQueryString();
+        // Paginación con filtros
+        $ingredients = $this->paginateWithFilters($query, 20);
 
         // Estadísticas
         $totalIngredients = CleanIngredient::count();
@@ -452,5 +448,18 @@ class IngredientController extends Controller
             ->get();
 
         return $this->generateExport($ingredients, 'csv');
+    }
+
+    /**
+     * Custom search filter for ingredients
+     */
+    protected function filterSearch($query, string $search, array $filters)
+    {
+        return $query->where(function($subQuery) use ($search) {
+            $subQuery->where('name', 'like', "%{$search}%")
+                     ->orWhere('chemical_name', 'like', "%{$search}%")
+                     ->orWhere('cas_number', 'like', "%{$search}%")
+                     ->orWhere('description', 'like', "%{$search}%");
+        });
     }
 }

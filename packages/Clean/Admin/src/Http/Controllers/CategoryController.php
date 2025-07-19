@@ -8,9 +8,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Clean\Core\Models\CleanCategory;
+use Clean\Admin\Traits\HasFilters;
+use Clean\Admin\Support\FilterConfig;
 
 class CategoryController extends Controller
 {
+    use HasFilters;
     /**
      * Display a listing of categories.
      */
@@ -20,30 +23,22 @@ class CategoryController extends Controller
             'search', 'usage_area', 'surface_type', 'parent_id', 'status', 'professional_use', 'sort_by', 'sort_order'
         ]);
 
-        // Construir query con filtros
+        // Construir query base
         $query = CleanCategory::withCount(['products', 'children'])
-            ->with('parent')
-            ->when($filters['search'] ?? null, fn($q, $search) => 
-                $q->where(function($subQ) use ($search) {
-                    $subQ->where('name', 'like', "%{$search}%")
-                         ->orWhere('description', 'like', "%{$search}%")
-                         ->orWhere('usage_area', 'like', "%{$search}%")
-                         ->orWhere('surface_type', 'like', "%{$search}%");
-                }))
-            ->when($filters['usage_area'] ?? null, fn($q, $area) => 
-                $q->where('usage_area', $area))
-            ->when($filters['surface_type'] ?? null, fn($q, $type) => 
-                $q->where('surface_type', $type))
-            ->when(isset($filters['parent_id']), function($q) use ($filters) {
-                if ($filters['parent_id'] === 'root') {
-                    return $q->whereNull('parent_id');
-                }
-                return $q->where('parent_id', $filters['parent_id']);
-            })
-            ->when(isset($filters['status']), fn($q) => 
-                $q->where('status', $filters['status']))
-            ->when(isset($filters['professional_use']), fn($q) => 
-                $q->where('professional_use', true));
+            ->with('parent');
+        
+        // Aplicar filtros usando el trait HasFilters
+        $filterConfig = FilterConfig::categories();
+        $query = $this->applyFilters($query, $filters, $filterConfig);
+        
+        // Manejar filtro especial de parent_id
+        if (isset($filters['parent_id']) && $filters['parent_id'] !== '') {
+            if ($filters['parent_id'] === 'root') {
+                $query->whereNull('parent_id');
+            } else {
+                $query->where('parent_id', $filters['parent_id']);
+            }
+        }
 
         // Ordenamiento
         $sortBy = $filters['sort_by'] ?? 'sort_order';
@@ -91,8 +86,28 @@ class CategoryController extends Controller
             ->ordered()
             ->get(['id', 'name']);
 
-        $usageAreas = ['Cocina', 'Baño', 'Pisos', 'Vidrios', 'Muebles', 'Exterior', 'Lavandería', 'General'];
-        $surfaceTypes = ['Cerámica', 'Vidrio', 'Madera', 'Metal', 'Plástico', 'Tela', 'Piedra', 'Mixto'];
+        // Usar valores dinámicos desde la base de datos, con fallback a valores estándar
+        $usageAreas = CleanCategory::select('usage_area')
+            ->whereNotNull('usage_area')
+            ->distinct()
+            ->orderBy('usage_area')
+            ->pluck('usage_area')
+            ->toArray();
+            
+        if (empty($usageAreas)) {
+            $usageAreas = ['Cocina', 'Baño', 'Pisos', 'Vidrios', 'Muebles', 'Exterior', 'Lavandería', 'General'];
+        }
+        
+        $surfaceTypes = CleanCategory::select('surface_type')
+            ->whereNotNull('surface_type')
+            ->distinct()
+            ->orderBy('surface_type')
+            ->pluck('surface_type')
+            ->toArray();
+            
+        if (empty($surfaceTypes)) {
+            $surfaceTypes = ['Cerámica', 'Vidrio', 'Madera', 'Metal', 'Plástico', 'Tela', 'Piedra', 'Mixto'];
+        }
 
         return view('clean-admin::categories.create', compact(
             'parentCategories', 'usageAreas', 'surfaceTypes'
@@ -185,8 +200,28 @@ class CategoryController extends Controller
             ->ordered()
             ->get(['id', 'name']);
 
-        $usageAreas = ['Cocina', 'Baño', 'Pisos', 'Vidrios', 'Muebles', 'Exterior', 'Lavandería', 'General'];
-        $surfaceTypes = ['Cerámica', 'Vidrio', 'Madera', 'Metal', 'Plástico', 'Tela', 'Piedra', 'Mixto'];
+        // Usar valores dinámicos desde la base de datos, con fallback a valores estándar
+        $usageAreas = CleanCategory::select('usage_area')
+            ->whereNotNull('usage_area')
+            ->distinct()
+            ->orderBy('usage_area')
+            ->pluck('usage_area')
+            ->toArray();
+            
+        if (empty($usageAreas)) {
+            $usageAreas = ['Cocina', 'Baño', 'Pisos', 'Vidrios', 'Muebles', 'Exterior', 'Lavandería', 'General'];
+        }
+        
+        $surfaceTypes = CleanCategory::select('surface_type')
+            ->whereNotNull('surface_type')
+            ->distinct()
+            ->orderBy('surface_type')
+            ->pluck('surface_type')
+            ->toArray();
+            
+        if (empty($surfaceTypes)) {
+            $surfaceTypes = ['Cerámica', 'Vidrio', 'Madera', 'Metal', 'Plástico', 'Tela', 'Piedra', 'Mixto'];
+        }
 
         return view('clean-admin::categories.edit', [
             'category' => $cleanCategory,

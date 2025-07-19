@@ -69,11 +69,12 @@
 
                 <!-- Buscador móvil -->
                 <div class="lg:hidden">
-                    <form method="GET" action="{{ route('admin.clean.ingredients.index') }}">
+                    <form id="filters-form-mobile" method="GET" action="{{ route('admin.clean.ingredients.index') }}">
                         <div class="relative">
-                            <input type="text" name="search" value="{{ $filters['search'] ?? '' }}" 
+                            <input type="text" name="search" id="search-mobile" value="{{ $filters['search'] ?? '' }}" 
                                    placeholder="Buscar ingredientes..." 
-                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                                   class="auto-filter w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
+                                   data-delay="500">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
                                 <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -85,62 +86,197 @@
             </div>
         </div>
 
-        <!-- Filtros avanzados desktop -->
-        <div class="hidden lg:block px-4 py-4 bg-gray-50 border-b border-gray-200">
-            <form method="GET" action="{{ route('admin.clean.ingredients.index') }}" class="grid grid-cols-1 md:grid-cols-6 gap-4">
-                <div>
-                    <input type="text" name="search" value="{{ $filters['search'] ?? '' }}" 
-                           placeholder="Buscar..." 
-                           class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500">
-                </div>
-                
-                <div>
-                    <select name="type" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500">
-                        <option value="">Tipo</option>
-                        @foreach($ingredientTypes as $type)
-                            <option value="{{ $type }}" {{ ($filters['type'] ?? '') === $type ? 'selected' : '' }}>
-                                {{ ucfirst($type) }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+        <!-- Filtros y Acciones -->
+        <div class="bg-white shadow-sm rounded-lg border border-gray-200">
+            <div class="px-4 py-4 border-b border-gray-200">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+                    <!-- Título de la sección -->
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900">Filtros de Búsqueda</h3>
+                    </div>
 
-                <div>
-                    <select name="safety_level" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500">
-                        <option value="">Nivel seguridad</option>
-                        @foreach($safetyLevels as $level)
-                            <option value="{{ $level }}" {{ ($filters['safety_level'] ?? '') === $level ? 'selected' : '' }}>
-                                {{ ucfirst($level) }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <!-- Acciones rápidas -->
+                    <div class="flex items-center space-x-2">
+                        <button onclick="toggleAdvancedFilters()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+                            </svg>
+                            Filtros Avanzados
+                        </button>
+                        <a href="{{ route('admin.clean.ingredients.export') }}" 
+                           class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Exportar
+                        </a>
+                    </div>
                 </div>
+            </div>
 
-                <div>
-                    <select name="is_natural" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500">
-                        <option value="">Origen</option>
-                        <option value="1" {{ ($filters['is_natural'] ?? '') === '1' ? 'selected' : '' }}>Natural</option>
-                        <option value="0" {{ ($filters['is_natural'] ?? '') === '0' ? 'selected' : '' }}>Sintético</option>
-                    </select>
+            <!-- Indicadores de filtros aplicados -->
+            @php
+                $hasFilters = collect($filters)->filter(fn($value) => !empty($value))->isNotEmpty();
+            @endphp
+            
+            @if($hasFilters)
+                <div class="px-4 py-3 bg-emerald-50 border-b border-emerald-200">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center">
+                                <svg class="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <span class="text-sm font-medium text-emerald-800">
+                                {{ collect($filters)->filter(fn($value) => !empty($value))->count() }} filtro(s) aplicado(s)
+                            </span>
+                            @foreach($filters as $key => $value)
+                                @if(!empty($value))
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                                        @if($key === 'search')
+                                            🔍 {{ $value }}
+                                        @elseif($key === 'type')
+                                            🧪 {{ ucfirst($value) }}
+                                        @elseif($key === 'safety_level')
+                                            ⚠️ {{ ucfirst($value) }}
+                                        @elseif($key === 'is_natural')
+                                            🌿 {{ $value == '1' ? 'Natural' : 'Sintético' }}
+                                        @elseif($key === 'is_biodegradable')
+                                            ♻️ {{ $value == '1' ? 'Biodegradable' : 'No biodegradable' }}
+                                        @else
+                                            {{ $key }}: {{ $value }}
+                                        @endif
+                                    </span>
+                                @endif
+                            @endforeach
+                        </div>
+                        <a href="{{ route('admin.clean.ingredients.index') }}" 
+                           class="text-sm font-medium text-emerald-600 hover:text-emerald-500 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Limpiar filtros
+                        </a>
+                    </div>
                 </div>
+            @endif
+            
+            <!-- Filtros principales -->
+            <div class="px-4 py-4">
+                <form id="filters-form" method="GET" action="{{ route('admin.clean.ingredients.index') }}" class="space-y-4">
+                    <!-- Búsqueda principal -->
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <div class="flex-1">
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
+                                </div>
+                                <input type="text" 
+                                       name="search" 
+                                       id="search"
+                                       value="{{ $filters['search'] ?? '' }}"
+                                       placeholder="Buscar por nombre, CAS, descripción..."
+                                       class="auto-filter block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm"
+                                       data-delay="500">
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <select name="is_natural" 
+                                    class="auto-filter px-4 py-3 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm">
+                                <option value="">Todos los orígenes</option>
+                                <option value="1" {{ ($filters['is_natural'] ?? '') === '1' ? 'selected' : '' }}>🌿 Natural</option>
+                                <option value="0" {{ ($filters['is_natural'] ?? '') === '0' ? 'selected' : '' }}>⚗️ Sintético</option>
+                            </select>
+                        </div>
+                    </div>
 
-                <div>
-                    <select name="is_biodegradable" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-emerald-500 focus:border-emerald-500">
-                        <option value="">Biodegradable</option>
-                        <option value="1" {{ ($filters['is_biodegradable'] ?? '') === '1' ? 'selected' : '' }}>Sí</option>
-                        <option value="0" {{ ($filters['is_biodegradable'] ?? '') === '0' ? 'selected' : '' }}>No</option>
-                    </select>
-                </div>
+                    <!-- Filtros avanzados (colapsables) -->
+                    <div id="advanced-filters" class="hidden">
+                        <div class="bg-gray-50 rounded-lg p-4 space-y-4">
+                            <div class="flex items-center space-x-2 mb-3">
+                                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+                                </svg>
+                                <h4 class="text-sm font-medium text-gray-700">Filtros Avanzados</h4>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                                <!-- Tipo -->
+                                <div>
+                                    <label for="type" class="block text-xs font-medium text-gray-600 mb-1">Tipo</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                                            </svg>
+                                        </div>
+                                        <select name="type" id="type" 
+                                                class="auto-filter w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm">
+                                            <option value="">Todos los tipos</option>
+                                            @foreach($ingredientTypes as $type)
+                                                <option value="{{ $type }}" {{ ($filters['type'] ?? '') === $type ? 'selected' : '' }}>
+                                                    {{ ucfirst($type) }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
 
-                <div class="flex gap-2">
-                    <button type="submit" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200">
-                        Filtrar
-                    </button>
-                    <a href="{{ route('admin.clean.ingredients.index') }}" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 text-center">
-                        Limpiar
-                    </a>
-                </div>
-            </form>
+                                <!-- Nivel de Seguridad -->
+                                <div>
+                                    <label for="safety_level" class="block text-xs font-medium text-gray-600 mb-1">Nivel de Seguridad</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                            </svg>
+                                        </div>
+                                        <select name="safety_level" id="safety_level" 
+                                                class="auto-filter w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm">
+                                            <option value="">Todos los niveles</option>
+                                            @foreach($safetyLevels as $level)
+                                                <option value="{{ $level }}" {{ ($filters['safety_level'] ?? '') === $level ? 'selected' : '' }}>
+                                                    @if($level === 'low') 🟢 Bajo
+                                                    @elseif($level === 'medium') 🟡 Medio  
+                                                    @elseif($level === 'high') 🔴 Alto
+                                                    @else {{ ucfirst($level) }}
+                                                    @endif
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Biodegradable -->
+                                <div>
+                                    <label for="is_biodegradable" class="block text-xs font-medium text-gray-600 mb-1">Biodegradable</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                            </svg>
+                                        </div>
+                                        <select name="is_biodegradable" id="is_biodegradable" 
+                                                class="auto-filter w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm">
+                                            <option value="">Todos</option>
+                                            <option value="1" {{ ($filters['is_biodegradable'] ?? '') === '1' ? 'selected' : '' }}>♻️ Biodegradable</option>
+                                            <option value="0" {{ ($filters['is_biodegradable'] ?? '') === '0' ? 'selected' : '' }}>❌ No biodegradable</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
 
         <!-- Acciones masivas (oculto por defecto) -->
@@ -461,21 +597,114 @@
 
 @push('scripts')
 <script>
-    // Toggle bulk actions
-    function toggleBulkActions() {
-        const bulkActions = document.getElementById('bulk-actions');
-        bulkActions.classList.toggle('hidden');
-        updateSelectedCount();
-    }
-
-    // Select all checkboxes
-    document.getElementById('select-all')?.addEventListener('change', function() {
-        const checkboxes = document.querySelectorAll('.ingredient-checkbox');
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = this.checked;
-        });
-        updateSelectedCount();
+    // Configuración para filtros automáticos
+    let filterTimeout;
+    const AUTO_FILTER_DELAY = 500; // 500ms de debounce para búsqueda
+    
+    // Inicializar filtros automáticos
+    document.addEventListener('DOMContentLoaded', function() {
+        initAutoFilters();
+        initBulkActions();
+        restoreFocus();
     });
+    
+    // Restaurar foco después de la recarga de página
+    function restoreFocus() {
+        const focusedElementId = sessionStorage.getItem('focusedElement');
+        const cursorPosition = sessionStorage.getItem('cursorPosition');
+        
+        if (focusedElementId) {
+            const element = document.getElementById(focusedElementId) || document.querySelector(`[name="${focusedElementId}"]`);
+            if (element) {
+                // Pequeño delay para asegurar que el DOM esté completamente cargado
+                setTimeout(() => {
+                    element.focus();
+                    if (cursorPosition && (element.type === 'text' || element.type === 'search')) {
+                        element.setSelectionRange(cursorPosition, cursorPosition);
+                    }
+                }, 100);
+            }
+            
+            // Limpiar sessionStorage
+            sessionStorage.removeItem('focusedElement');
+            sessionStorage.removeItem('cursorPosition');
+        }
+    }
+    
+    function initAutoFilters() {
+        const form = document.getElementById('filters-form');
+        const autoFilterElements = document.querySelectorAll('.auto-filter');
+        
+        autoFilterElements.forEach(element => {
+            if (element.type === 'text' || element.type === 'search') {
+                // Para campos de texto, usar debounce
+                element.addEventListener('input', function() {
+                    clearTimeout(filterTimeout);
+                    const delay = parseInt(element.getAttribute('data-delay')) || AUTO_FILTER_DELAY;
+                    
+                    filterTimeout = setTimeout(() => {
+                        submitFilters();
+                    }, delay);
+                });
+            } else {
+                // Para selects, aplicar filtro inmediatamente
+                element.addEventListener('change', function() {
+                    clearTimeout(filterTimeout);
+                    submitFilters();
+                });
+            }
+        });
+    }
+    
+    function submitFilters() {
+        // Determinar qué formulario usar (desktop o móvil)
+        const form = document.getElementById('filters-form') || document.getElementById('filters-form-mobile');
+        if (form) {
+            // Guardar información del elemento activo
+            const activeElement = document.activeElement;
+            if (activeElement && (activeElement.type === 'text' || activeElement.type === 'search')) {
+                const elementId = activeElement.id || activeElement.name;
+                const cursorPosition = activeElement.selectionStart;
+                
+                // Guardar en sessionStorage para restaurar después de la recarga
+                sessionStorage.setItem('focusedElement', elementId);
+                sessionStorage.setItem('cursorPosition', cursorPosition);
+            }
+            
+            // Mostrar indicador de carga
+            showLoadingIndicator();
+            form.submit();
+        }
+    }
+    
+    function showLoadingIndicator() {
+        // Ya no necesitamos mostrar indicador de carga ya que los filtros son automáticos
+        // Esta función se mantiene para compatibilidad pero no hace nada
+    }
+    
+    // Funciones de selección masiva
+    function initBulkActions() {
+        // Toggle bulk actions
+        window.toggleBulkActions = function() {
+            const bulkActions = document.getElementById('bulk-actions');
+            bulkActions.classList.toggle('hidden');
+            updateSelectedCount();
+        };
+
+        // Select all checkboxes
+        document.getElementById('select-all')?.addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.ingredient-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+            updateSelectedCount();
+        });
+
+        // Add event listeners to checkboxes
+        document.querySelectorAll('.ingredient-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', updateSelectedCount);
+        });
+    }
 
     // Update selected count
     function updateSelectedCount() {
@@ -489,11 +718,6 @@
             document.getElementById('bulk-actions').classList.add('hidden');
         }
     }
-
-    // Add event listeners to checkboxes
-    document.querySelectorAll('.ingredient-checkbox').forEach(checkbox => {
-        checkbox.addEventListener('change', updateSelectedCount);
-    });
 
     // Bulk actions
     function bulkAction(action) {
@@ -538,6 +762,34 @@
             console.error('Error:', error);
             alert('Error en la operación');
         });
+    }
+    
+    // Toggle para filtros avanzados
+    function toggleAdvancedFilters() {
+        const advancedFilters = document.getElementById('advanced-filters');
+        const button = event.target;
+        
+        if (advancedFilters.classList.contains('hidden')) {
+            advancedFilters.classList.remove('hidden');
+            button.innerHTML = `
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                </svg>
+                Ocultar Filtros
+            `;
+            button.classList.remove('bg-gray-100', 'hover:bg-gray-200', 'text-gray-700');
+            button.classList.add('bg-emerald-100', 'hover:bg-emerald-200', 'text-emerald-700');
+        } else {
+            advancedFilters.classList.add('hidden');
+            button.innerHTML = `
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+                </svg>
+                Filtros Avanzados
+            `;
+            button.classList.remove('bg-emerald-100', 'hover:bg-emerald-200', 'text-emerald-700');
+            button.classList.add('bg-gray-100', 'hover:bg-gray-200', 'text-gray-700');
+        }
     }
 </script>
 @endpush

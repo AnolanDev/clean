@@ -8,9 +8,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Clean\Core\Models\CleanBrand;
+use Clean\Admin\Traits\HasFilters;
+use Clean\Admin\Support\FilterConfig;
 
 class BrandController extends Controller
 {
+    use HasFilters;
     /**
      * Display a listing of brands.
      */
@@ -20,20 +23,12 @@ class BrandController extends Controller
             'search', 'country', 'eco_friendly', 'status', 'sort_by', 'sort_order'
         ]);
 
-        // Construir query con filtros
-        $query = CleanBrand::withCount('products')
-            ->when($filters['search'] ?? null, fn($q, $search) => 
-                $q->where(function($subQ) use ($search) {
-                    $subQ->where('name', 'like', "%{$search}%")
-                         ->orWhere('description', 'like', "%{$search}%")
-                         ->orWhere('country', 'like', "%{$search}%");
-                }))
-            ->when($filters['country'] ?? null, fn($q, $country) => 
-                $q->where('country', $country))
-            ->when(isset($filters['eco_friendly']), fn($q) => 
-                $q->where('is_eco_friendly', true))
-            ->when(isset($filters['status']), fn($q) => 
-                $q->where('status', $filters['status']));
+        // Construir query base
+        $query = CleanBrand::withCount('products');
+        
+        // Aplicar filtros usando el trait HasFilters
+        $filterConfig = FilterConfig::brands();
+        $query = $this->applyFilters($query, $filters, $filterConfig);
 
         // Ordenamiento
         $sortBy = $filters['sort_by'] ?? 'sort_order';

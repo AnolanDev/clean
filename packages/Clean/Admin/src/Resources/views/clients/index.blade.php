@@ -92,80 +92,235 @@
             </dl>
         </div>
 
-        <!-- Filtros y Búsqueda -->
-        <div class="mb-6 rounded-lg bg-white p-6 shadow">
-            <form method="GET" action="{{ route('admin.clean.clients.index') }}" class="space-y-4">
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
-                    <!-- Búsqueda -->
-                    <div class="lg:col-span-2">
-                        <label for="search" class="block text-sm font-medium text-gray-700">Buscar</label>
-                        <input type="text" 
-                               name="search" 
-                               id="search"
-                               value="{{ $filters['search'] ?? '' }}"
-                               placeholder="Empresa, contacto, email..."
-                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm">
+        <!-- Filtros y Acciones -->
+        <div class="bg-white shadow-sm rounded-lg border border-gray-200 mb-6">
+            <div class="px-4 py-4 border-b border-gray-200">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+                    <!-- Título de la sección -->
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900">Filtros de Búsqueda</h3>
                     </div>
 
-                    <!-- Industria -->
-                    <div>
-                        <label for="industry_type" class="block text-sm font-medium text-gray-700">Industria</label>
-                        <select name="industry_type" id="industry_type" 
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm">
-                            <option value="">Todas</option>
-                            <option value="hospitality" {{ ($filters['industry_type'] ?? '') === 'hospitality' ? 'selected' : '' }}>🏨 Hotelería</option>
-                            <option value="healthcare" {{ ($filters['industry_type'] ?? '') === 'healthcare' ? 'selected' : '' }}>🏥 Salud</option>
-                            <option value="education" {{ ($filters['industry_type'] ?? '') === 'education' ? 'selected' : '' }}>🏫 Educación</option>
-                            <option value="office" {{ ($filters['industry_type'] ?? '') === 'office' ? 'selected' : '' }}>🏢 Oficinas</option>
-                            <option value="retail" {{ ($filters['industry_type'] ?? '') === 'retail' ? 'selected' : '' }}>🏪 Retail</option>
-                            <option value="restaurant" {{ ($filters['industry_type'] ?? '') === 'restaurant' ? 'selected' : '' }}>🍽️ Restaurantes</option>
-                            <option value="manufacturing" {{ ($filters['industry_type'] ?? '') === 'manufacturing' ? 'selected' : '' }}>🏭 Manufactura</option>
-                            <option value="government" {{ ($filters['industry_type'] ?? '') === 'government' ? 'selected' : '' }}>🏛️ Gobierno</option>
-                            <option value="other" {{ ($filters['industry_type'] ?? '') === 'other' ? 'selected' : '' }}>🏢 Otro</option>
-                        </select>
-                    </div>
-
-                    <!-- Tipo de Cliente -->
-                    <div>
-                        <label for="client_type" class="block text-sm font-medium text-gray-700">Tipo</label>
-                        <select name="client_type" id="client_type" 
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm">
-                            <option value="">Todos</option>
-                            <option value="corporate" {{ ($filters['client_type'] ?? '') === 'corporate' ? 'selected' : '' }}>Corporativo</option>
-                            <option value="small_business" {{ ($filters['client_type'] ?? '') === 'small_business' ? 'selected' : '' }}>Pequeña Empresa</option>
-                            <option value="government" {{ ($filters['client_type'] ?? '') === 'government' ? 'selected' : '' }}>Gobierno</option>
-                            <option value="institution" {{ ($filters['client_type'] ?? '') === 'institution' ? 'selected' : '' }}>Institución</option>
-                        </select>
-                    </div>
-
-                    <!-- Nivel de Riesgo -->
-                    <div>
-                        <label for="risk_level" class="block text-sm font-medium text-gray-700">Riesgo</label>
-                        <select name="risk_level" id="risk_level" 
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm">
-                            <option value="">Todos</option>
-                            <option value="low" {{ ($filters['risk_level'] ?? '') === 'low' ? 'selected' : '' }}>Bajo</option>
-                            <option value="medium" {{ ($filters['risk_level'] ?? '') === 'medium' ? 'selected' : '' }}>Medio</option>
-                            <option value="high" {{ ($filters['risk_level'] ?? '') === 'high' ? 'selected' : '' }}>Alto</option>
-                        </select>
+                    <!-- Acciones rápidas -->
+                    <div class="flex items-center space-x-2">
+                        <button onclick="toggleAdvancedFilters()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+                            </svg>
+                            Filtros Avanzados
+                        </button>
+                        <a href="{{ route('admin.clean.clients.export', request()->query()) }}" 
+                           class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Exportar
+                        </a>
                     </div>
                 </div>
+            </div>
 
-                <div class="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-3">
-                    <button type="submit" 
-                            class="inline-flex justify-center rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600">
-                        🔍 Filtrar
-                    </button>
-                    <a href="{{ route('admin.clean.clients.index') }}" 
-                       class="inline-flex justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                        🗑️ Limpiar
-                    </a>
-                    <a href="{{ route('admin.clean.clients.export', request()->query()) }}" 
-                       class="inline-flex justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
-                        📄 Exportar CSV
-                    </a>
+            <!-- Indicadores de filtros aplicados -->
+            @php
+                $hasFilters = collect($filters)->filter(fn($value) => !empty($value))->isNotEmpty();
+            @endphp
+            
+            @if($hasFilters)
+                <div class="px-4 py-3 bg-emerald-50 border-b border-emerald-200">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center">
+                                <svg class="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <span class="text-sm font-medium text-emerald-800">
+                                {{ collect($filters)->filter(fn($value) => !empty($value))->count() }} filtro(s) aplicado(s)
+                            </span>
+                            @foreach($filters as $key => $value)
+                                @if(!empty($value))
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                                        @if($key === 'search')
+                                            🔍 {{ $value }}
+                                        @elseif($key === 'industry_type')
+                                            🏢 {{ ucfirst($value) }}
+                                        @elseif($key === 'client_type')
+                                            👥 {{ ucfirst($value) }}
+                                        @elseif($key === 'risk_level')
+                                            ⚠️ {{ ucfirst($value) }}
+                                        @elseif($key === 'is_active')
+                                            ✅ {{ $value == '1' ? 'Activos' : 'Inactivos' }}
+                                        @else
+                                            {{ $key }}: {{ $value }}
+                                        @endif
+                                    </span>
+                                @endif
+                            @endforeach
+                        </div>
+                        <a href="{{ route('admin.clean.clients.index') }}" 
+                           class="text-sm font-medium text-emerald-600 hover:text-emerald-500 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Limpiar filtros
+                        </a>
+                    </div>
                 </div>
-            </form>
+            @endif
+            
+            <!-- Filtros principales -->
+            <div class="px-4 py-4">
+                <form id="filters-form" method="GET" action="{{ route('admin.clean.clients.index') }}" class="space-y-4">
+                    <!-- Búsqueda principal -->
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <div class="flex-1">
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
+                                </div>
+                                <input type="text" 
+                                       name="search" 
+                                       id="search"
+                                       value="{{ $filters['search'] ?? '' }}"
+                                       placeholder="Buscar por empresa, contacto, email..."
+                                       class="auto-filter block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm"
+                                       data-delay="600">
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <select name="is_active" 
+                                    class="auto-filter px-4 py-3 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm">
+                                <option value="">Todos los estados</option>
+                                <option value="1" {{ ($filters['is_active'] ?? '') === '1' ? 'selected' : '' }}>✅ Activos</option>
+                                <option value="0" {{ ($filters['is_active'] ?? '') === '0' ? 'selected' : '' }}>❌ Inactivos</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Filtros avanzados (colapsables) -->
+                    <div id="advanced-filters" class="hidden">
+                        <div class="bg-gray-50 rounded-lg p-4 space-y-4">
+                            <div class="flex items-center space-x-2 mb-3">
+                                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+                                </svg>
+                                <h4 class="text-sm font-medium text-gray-700">Filtros Avanzados</h4>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+
+                                <!-- Industria -->
+                                <div>
+                                    <label for="industry_type" class="block text-xs font-medium text-gray-600 mb-1">Industria</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                            </svg>
+                                        </div>
+                                        <select name="industry_type" id="industry_type" 
+                                                class="auto-filter w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm">
+                                            <option value="">Todas las industrias</option>
+                                            <option value="hospitality" {{ ($filters['industry_type'] ?? '') === 'hospitality' ? 'selected' : '' }}>🏨 Hotelería</option>
+                                            <option value="healthcare" {{ ($filters['industry_type'] ?? '') === 'healthcare' ? 'selected' : '' }}>🏥 Salud</option>
+                                            <option value="education" {{ ($filters['industry_type'] ?? '') === 'education' ? 'selected' : '' }}>🏫 Educación</option>
+                                            <option value="office" {{ ($filters['industry_type'] ?? '') === 'office' ? 'selected' : '' }}>🏢 Oficinas</option>
+                                            <option value="retail" {{ ($filters['industry_type'] ?? '') === 'retail' ? 'selected' : '' }}>🏪 Retail</option>
+                                            <option value="restaurant" {{ ($filters['industry_type'] ?? '') === 'restaurant' ? 'selected' : '' }}>🍽️ Restaurantes</option>
+                                            <option value="manufacturing" {{ ($filters['industry_type'] ?? '') === 'manufacturing' ? 'selected' : '' }}>🏭 Manufactura</option>
+                                            <option value="government" {{ ($filters['industry_type'] ?? '') === 'government' ? 'selected' : '' }}>🏛️ Gobierno</option>
+                                            <option value="other" {{ ($filters['industry_type'] ?? '') === 'other' ? 'selected' : '' }}>🏢 Otro</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Tipo de Cliente -->
+                                <div>
+                                    <label for="client_type" class="block text-xs font-medium text-gray-600 mb-1">Tipo de Cliente</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                            </svg>
+                                        </div>
+                                        <select name="client_type" id="client_type" 
+                                                class="auto-filter w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm">
+                                            <option value="">Todos los tipos</option>
+                                            <option value="corporate" {{ ($filters['client_type'] ?? '') === 'corporate' ? 'selected' : '' }}>🏢 Corporativo</option>
+                                            <option value="small_business" {{ ($filters['client_type'] ?? '') === 'small_business' ? 'selected' : '' }}>🏪 Pequeña Empresa</option>
+                                            <option value="government" {{ ($filters['client_type'] ?? '') === 'government' ? 'selected' : '' }}>🏛️ Gobierno</option>
+                                            <option value="institution" {{ ($filters['client_type'] ?? '') === 'institution' ? 'selected' : '' }}>🏫 Institución</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Nivel de Riesgo -->
+                                <div>
+                                    <label for="risk_level" class="block text-xs font-medium text-gray-600 mb-1">Nivel de Riesgo</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"></path>
+                                            </svg>
+                                        </div>
+                                        <select name="risk_level" id="risk_level" 
+                                                class="auto-filter w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm">
+                                            <option value="">Todos los niveles</option>
+                                            <option value="low" {{ ($filters['risk_level'] ?? '') === 'low' ? 'selected' : '' }}>🟢 Bajo</option>
+                                            <option value="medium" {{ ($filters['risk_level'] ?? '') === 'medium' ? 'selected' : '' }}>🟡 Medio</option>
+                                            <option value="high" {{ ($filters['risk_level'] ?? '') === 'high' ? 'selected' : '' }}>🔴 Alto</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Ordenar por -->
+                                <div>
+                                    <label for="sort_by" class="block text-xs font-medium text-gray-600 mb-1">Ordenar por</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
+                                            </svg>
+                                        </div>
+                                        <select name="sort_by" id="sort_by" 
+                                                class="auto-filter w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm">
+                                            <option value="company_name" {{ ($filters['sort_by'] ?? 'company_name') === 'company_name' ? 'selected' : '' }}>📊 Empresa</option>
+                                            <option value="contact_name" {{ ($filters['sort_by'] ?? '') === 'contact_name' ? 'selected' : '' }}>👤 Contacto</option>
+                                            <option value="total_purchases" {{ ($filters['sort_by'] ?? '') === 'total_purchases' ? 'selected' : '' }}>💰 Compras</option>
+                                            <option value="created_at" {{ ($filters['sort_by'] ?? '') === 'created_at' ? 'selected' : '' }}>📅 Fecha registro</option>
+                                            <option value="last_purchase_date" {{ ($filters['sort_by'] ?? '') === 'last_purchase_date' ? 'selected' : '' }}>🛒 Última compra</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Orden -->
+                                <div>
+                                    <label for="sort_order" class="block text-xs font-medium text-gray-600 mb-1">Orden</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path>
+                                            </svg>
+                                        </div>
+                                        <select name="sort_order" id="sort_order" 
+                                                class="auto-filter w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm">
+                                            <option value="asc" {{ ($filters['sort_order'] ?? 'asc') === 'asc' ? 'selected' : '' }}>⬆️ Ascendente</option>
+                                            <option value="desc" {{ ($filters['sort_order'] ?? '') === 'desc' ? 'selected' : '' }}>⬇️ Descendente</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
 
         <!-- Acciones Masivas -->
@@ -327,10 +482,125 @@
             <!-- Paginación -->
             @if($clients->hasPages())
             <div class="mt-6">
-                {{ $clients->appends(request()->query())->links() }}
+                {{ $clients->withQueryString()->links() }}
             </div>
             @endif
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    // Configuración para filtros automáticos
+    let filterTimeout;
+    const AUTO_FILTER_DELAY = 600; // 600ms de debounce para búsqueda de clientes
+    
+    // Inicializar filtros automáticos
+    document.addEventListener('DOMContentLoaded', function() {
+        initAutoFilters();
+        restoreFocus();
+    });
+    
+    // Restaurar foco después de la recarga de página
+    function restoreFocus() {
+        const focusedElementId = sessionStorage.getItem('focusedElement');
+        const cursorPosition = sessionStorage.getItem('cursorPosition');
+        
+        if (focusedElementId) {
+            const element = document.getElementById(focusedElementId) || document.querySelector(`[name="${focusedElementId}"]`);
+            if (element) {
+                // Pequeño delay para asegurar que el DOM esté completamente cargado
+                setTimeout(() => {
+                    element.focus();
+                    if (cursorPosition && (element.type === 'text' || element.type === 'search')) {
+                        element.setSelectionRange(cursorPosition, cursorPosition);
+                    }
+                }, 100);
+            }
+            
+            // Limpiar sessionStorage
+            sessionStorage.removeItem('focusedElement');
+            sessionStorage.removeItem('cursorPosition');
+        }
+    }
+    
+    function initAutoFilters() {
+        const form = document.getElementById('filters-form');
+        const autoFilterElements = document.querySelectorAll('.auto-filter');
+        
+        autoFilterElements.forEach(element => {
+            if (element.type === 'text' || element.type === 'search') {
+                // Para campos de texto, usar debounce
+                element.addEventListener('input', function() {
+                    clearTimeout(filterTimeout);
+                    const delay = parseInt(element.getAttribute('data-delay')) || AUTO_FILTER_DELAY;
+                    
+                    filterTimeout = setTimeout(() => {
+                        submitFilters();
+                    }, delay);
+                });
+            } else {
+                // Para selects, aplicar filtro inmediatamente
+                element.addEventListener('change', function() {
+                    clearTimeout(filterTimeout);
+                    submitFilters();
+                });
+            }
+        });
+    }
+    
+    function submitFilters() {
+        const form = document.getElementById('filters-form');
+        if (form) {
+            // Guardar información del elemento activo
+            const activeElement = document.activeElement;
+            if (activeElement && (activeElement.type === 'text' || activeElement.type === 'search')) {
+                const elementId = activeElement.id || activeElement.name;
+                const cursorPosition = activeElement.selectionStart;
+                
+                // Guardar en sessionStorage para restaurar después de la recarga
+                sessionStorage.setItem('focusedElement', elementId);
+                sessionStorage.setItem('cursorPosition', cursorPosition);
+            }
+            
+            // Mostrar indicador de carga
+            showLoadingIndicator();
+            form.submit();
+        }
+    }
+    
+    function showLoadingIndicator() {
+        // Ya no necesitamos mostrar indicador de carga ya que los filtros son automáticos
+        // Esta función se mantiene para compatibilidad pero no hace nada
+    }
+    
+    // Toggle para filtros avanzados
+    function toggleAdvancedFilters() {
+        const advancedFilters = document.getElementById('advanced-filters');
+        const button = event.target;
+        
+        if (advancedFilters.classList.contains('hidden')) {
+            advancedFilters.classList.remove('hidden');
+            button.innerHTML = `
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                </svg>
+                Ocultar Filtros
+            `;
+            button.classList.remove('bg-gray-100', 'hover:bg-gray-200', 'text-gray-700');
+            button.classList.add('bg-emerald-100', 'hover:bg-emerald-200', 'text-emerald-700');
+        } else {
+            advancedFilters.classList.add('hidden');
+            button.innerHTML = `
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+                </svg>
+                Filtros Avanzados
+            `;
+            button.classList.remove('bg-emerald-100', 'hover:bg-emerald-200', 'text-emerald-700');
+            button.classList.add('bg-gray-100', 'hover:bg-gray-200', 'text-gray-700');
+        }
+    }
+</script>
+@endpush
 @endsection
